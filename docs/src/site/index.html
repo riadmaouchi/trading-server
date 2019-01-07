@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Environment</title>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <style>html,
+           body {
+                height: 100%;
+                background-color: #333;
+           }
+           body {
+                display: -ms-flexbox;
+                display: -webkit-box;
+                display: flex;
+                -ms-flex-pack: center;
+                -webkit-box-pack: center;
+                justify-content: center;
+                color: #fff;
+                text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+                box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
+           }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <table class="table table-striped table-dark">
+        <thead>
+        <tr>
+            <th>Service</th>
+            <th>Documentation</th>
+            <th>State</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                Order Matcher
+            </td>
+            <td>
+                <ul>
+                    <li><a href="http://localhost:8090/matching-engine/spec/#/all">Living Documentation</a></li>
+                </ul>
+            </td>
+            <td><a href="http://localhost:9997">
+                <svg width="94" height="20">
+                    <image href="http://localhost:9997/badge"></image>
+                </svg>
+            </a>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                Trade Execution
+            </td>
+            <td>
+                <ul>
+                    <li><a href="http://localhost:8090/order/jgiven/#/all">Living Documentation</a></li>
+                    <li><a href="http://localhost:8090/order/swagger/">Swagger</a></li>
+                </ul>
+            </td>
+            <td><a href="http://localhost:9998">
+                <svg width="94" height="20">
+                    <image href="http://localhost:9998/badge"></image>
+                </svg>
+            </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Pricing
+            </td>
+            <td>
+                <ul>
+                    <li><a href="http://localhost:8090/pricing/jgiven/#/all">Living Documentation</a></li>
+                    <li><a href="http://localhost:8090/pricing/swagger/">Swagger</a></li>
+                </ul>
+            </td>
+            <td><a href="http://localhost:9999">
+                <svg width="94" height="20">
+                    <image href="http://localhost:9999/badge"></image>
+                </svg>
+            </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Markets
+            </td>
+            <td></td>
+            <td><a href="http://localhost:9996">
+                <svg width="94" height="20">
+                    <image href="http://localhost:9996/badge"></image>
+                </svg>
+            </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Trading Markets
+            </td>
+            <td></td>
+            <td><a href="http://localhost">Trading Markets</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="container">
+    <table class="table table-striped table-dark">
+        <thead>
+        <tr>
+            <th>Service</th>
+            <th>Description</th>
+            <th>Url</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Consul</td>
+            <td>
+                Service discovery
+            </td>
+            <td><a href="http://localhost:8500">Consul</a></td>
+        </tr>
+        <tr>
+            <td>Weave Scope</td>
+            <td>
+                Real-Time View
+            </td>
+            <td><a href="http://localhost:4040">Weave Scope</a></td>
+        </tr>
+        <tr>
+            <td>Prometheus</td>
+            <td>
+                Metrics
+            </td>
+            <td><a href="http://localhost:9090">Prometheus</a></td>
+        </tr>
+        <tr>
+            <td>Grafana</td>
+            <td>
+                Dashboard
+            </td>
+            <td><a href="http://localhost:3000">Grafana</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<script src="jquery-3.3.1.min.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

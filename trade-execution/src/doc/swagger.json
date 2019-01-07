@@ -1,0 +1,143 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "Order Rest API"
+  },
+  "host": "localhost:8080",
+  "basePath": "/v1",
+  "tags": [
+    {
+      "name": "Order"
+    },
+    {
+      "name": "OrderBook"
+    }
+  ],
+  "paths": {
+    "/order/new": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "Submit a new order",
+        "description": "",
+        "operationId": "submitNewOrder",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "order to submit",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SubmitOrder"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order successfully submitted"
+          }
+        }
+      }
+    },
+    "/book/{symbol}": {
+      "get": {
+        "tags": [
+          "OrderBook"
+        ],
+        "summary": "Allow you to keep track of the state of the order book",
+        "description": "",
+        "operationId": "getOrderBook",
+        "produces": [
+          "text/event-stream"
+        ],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "example": "EURUSD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successfully subscribed",
+            "schema": {
+              "$ref": "#/definitions/OrderLevel"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "SubmitOrder": {
+      "type": "object",
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "example": "EURUSD"
+        },
+        "broker": {
+          "type": "string",
+          "example": "BROKER"
+        },
+        "amount": {
+          "type": "number",
+          "format": "integer",
+          "example": 101
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "buy",
+            "sell"
+          ],
+          "example": "buy"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "market",
+            "limit"
+          ],
+          "example": "limit"
+        },
+        "price": {
+          "type": "number",
+          "format": "double",
+          "example": 1.23453
+        }
+      }
+    },
+    "OrderLevel": {
+      "type": "object",
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "example": "EURUSD"
+        },
+        "amount": {
+          "type": "number",
+          "format": "double",
+          "example": 101.89
+        },
+        "price": {
+          "type": "number",
+          "format": "double",
+          "example": 1.23453
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "buy",
+            "sell"
+          ],
+          "example": "buy"
+        }
+      }
+    }
+  }
+}

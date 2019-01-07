@@ -1,0 +1,38 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>dist-assembly</id>
+
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <moduleSets>
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+            <includes>
+                <include>org.trading:pricing</include>
+                <include>org.trading:matching-engine</include>
+                <include>org.trading:trade-execution</include>
+            </includes>
+            <binaries>
+                <attachmentClassifier>dist-doc</attachmentClassifier>
+                <includeDependencies>false</includeDependencies>
+                <outputDirectory/>
+                <unpack>false</unpack>
+            </binaries>
+        </moduleSet>
+    </moduleSets>
+
+    <fileSets>
+        <fileSet>
+            <directory>src/site</directory>
+            <outputDirectory/>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+</assembly>

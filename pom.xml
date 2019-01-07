@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.trading</groupId>
+    <artifactId>trading-server</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>api</module>
+        <module>messaging</module>
+        <module>discovery</module>
+        <module>configuration</module>
+        <module>health</module>
+        <module>web</module>
+        <module>pricing</module>
+        <module>trade-execution</module>
+        <module>market</module>
+        <module>matching-engine</module>
+        <module>docs</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-compiler.version>3.8.0</maven-compiler.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <jetty.version>9.4.14.v20181114</jetty.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <logback.version>1.2.3</logback.version>
+        <jgiven.version>0.17.0</jgiven.version>
+        <protobuf.version>3.6.1</protobuf.version>
+        <prometheus.version>0.6.0</prometheus.version>
+        <consul-client.version>1.3.0</consul-client.version>
+        <guava.version>27.0.1-jre</guava.version>
+        <json-smart.version>2.3</json-smart.version>
+        <fastutil.version>8.2.2</fastutil.version>
+        <disruptor.version>3.4.2</disruptor.version>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+        <assertj-core.version>3.11.1</assertj-core.version>
+        <mockito.version>2.23.0</mockito.version>
+        <junit-dataprovider.version>2.4</junit-dataprovider.version>
+        <os-maven-plugin.version>1.6.1</os-maven-plugin.version>
+        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
+        <download-maven-plugin.version>1.4.1</download-maven-plugin.version>
+        <protobuf-maven-plugin.version>0.5.1</protobuf-maven-plugin.version>
+        <maven-site-plugin.version>3.7.1</maven-site-plugin.version>
+        <javafaker.version>0.16</javafaker.version>
+        <junit.version>5.3.1</junit.version>
+        <junit-platform.version>1.3.1</junit-platform.version>
+        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
+        <metrics.version>4.0.3</metrics.version>
+        <netty.version>4.1.32.Final</netty.version>
+        <commons-configuration.version>2.4</commons-configuration.version>
+        <commons-beanutils.version>1.9.3</commons-beanutils.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- CONFIGURATION -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-configuration2</artifactId>
+                <version>${commons-configuration.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient</artifactId>
+                <version>${prometheus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient_httpserver</artifactId>
+                <version>${prometheus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-healthchecks</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-jvm</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-servlets</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.orbitz.consul</groupId>
+                <artifactId>consul-client</artifactId>
+                <version>${consul-client.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.javafaker</groupId>
+                <artifactId>javafaker</artifactId>
+                <version>${javafaker.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.trading</groupId>
+                <artifactId>api</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.trading</groupId>
+                <artifactId>messaging</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.trading</groupId>
+                <artifactId>discovery</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.trading</groupId>
+                <artifactId>health</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.trading</groupId>
+                <artifactId>configuration</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.trading</groupId>
+                <artifactId>web</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.trading</groupId>
+                <artifactId>api</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>json-smart</artifactId>
+                <version>${json-smart.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.unimi.dsi</groupId>
+                <artifactId>fastutil</artifactId>
+                <version>${fastutil.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>${disruptor.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>javax.servlet-api</artifactId>
+                        <groupId>javax.servlet</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-servlet</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-servlets</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-client</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java-util</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+
+            <!-- LOGGING -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <!-- TEST -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!--  <dependency>
+                  <groupId>org.junit.platform</groupId>
+                  <artifactId>junit-platform-runner</artifactId>
+                  <version>${junit-platform.version}</version>
+                  <scope>test</scope>
+              </dependency>-->
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj-core.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.tngtech.junit.dataprovider</groupId>
+                <artifactId>junit-jupiter-dataprovider</artifactId>
+                <version>${junit-dataprovider.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.tngtech.jgiven</groupId>
+                <artifactId>jgiven-junit5</artifactId>
+                <version>${jgiven.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.tngtech.jgiven</groupId>
+                <artifactId>jgiven-html5-report</artifactId>
+                <version>${jgiven.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>${os-maven-plugin.version}</version>
+            </extension>
+        </extensions>
+
+        <plugins>
+
+
+        </plugins>
+        <!--  <plugins>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-assembly-plugin</artifactId>
+                  <executions>
+                      <execution>
+                          <id>make-assembly</id>
+                          <phase>site</phase>
+                          <goals>
+                              <goal>single</goal>
+                          </goals>
+                      </execution>
+                  </executions>
+              </plugin>
+          </plugins> -->
+
+
+        <pluginManagement>
+            <plugins>
+                <!--  <plugin>
+                      <groupId>org.sonarsource.scanner.maven</groupId>
+                      <artifactId>sonar-maven-plugin</artifactId>
+                      <version>3.5.0.1254</version>
+                  </plugin>
+                  <plugin>
+                      <groupId>org.jacoco</groupId>
+                      <artifactId>jacoco-maven-plugin</artifactId>
+                      <version>0.8.2</version>
+                      <configuration>
+                          <destFile>${sonar.jacoco.reportPath}</destFile>
+                          <append>true</append>
+                      </configuration>
+                  </plugin>-->
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${maven-site-plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.xolstice.maven.plugins</groupId>
+                    <artifactId>protobuf-maven-plugin</artifactId>
+                    <version>${protobuf-maven-plugin.version}</version>
+                    <configuration>
+                        <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}
+                        </protocArtifact>
+                        <protoSourceRoot>${basedir}/src/main/resources</protoSourceRoot>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.googlecode.maven-download-plugin</groupId>
+                    <artifactId>download-maven-plugin</artifactId>
+                    <version>${download-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>swagger-ui</id>
+                            <phase>generate-resources</phase>
+                            <goals>
+                                <goal>wget</goal>
+                            </goals>
+                            <configuration>
+                                <url>https://github.com/swagger-api/swagger-ui/archive/master.tar.gz</url>
+                                <unpack>true</unpack>
+                                <outputDirectory>${project.build.directory}</outputDirectory>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler.version}</version>
+                    <configuration>
+                        <release>11</release>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+
+
+                <plugin>
+                    <groupId>com.tngtech.jgiven</groupId>
+                    <artifactId>jgiven-maven-plugin</artifactId>
+                    <version>${jgiven.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <format>html5</format>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven-assembly-plugin.version}</version>
+                    <configuration>
+                        <appendAssemblyId>false</appendAssemblyId>
+                        <runOnlyAtExecutionRoot>false</runOnlyAtExecutionRoot>
+                        <descriptors>
+                            <descriptor>src/assembly/jar-with-dependencies.xml</descriptor>
+                        </descriptors>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>make-assembly</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

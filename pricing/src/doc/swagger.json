@@ -1,0 +1,77 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "Pricing Rest API"
+  },
+  "host": "localhost:8085",
+  "basePath": "/v1",
+  "tags": [
+    {
+      "name": "Pricing"
+    }
+  ],
+  "paths": {
+    "/pricing": {
+      "get": {
+        "tags": [
+          "Pricing"
+        ],
+        "summary": "Returns Price ladder",
+        "description": "",
+        "operationId": "getPriceLadder",
+        "produces": [
+          "text/event-stream"
+        ],
+        "responses": {
+          "200": {
+            "description": "successfully subscribed",
+            "schema": {
+              "$ref": "#/definitions/Price"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Price": {
+      "type": "object",
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "example": "EURUSD"
+        },
+        "asks": {
+          "type": "array",
+          "$ref": "#/definitions/Bucket",
+          "example": "[{ \"quantity \":1000000, \"price \":0.83225},{ \"quantity \":5000000, \"price \":0.85143}]"
+        },
+        "bids": {
+          "type": "array",
+          "$ref": "#/definitions/Bucket",
+          "example": "[{ \"quantity \":1000000, \"price \":0.83223},{ \"quantity \":5000000, \"price \":0.82342}]"
+        },
+        "time": {
+          "type": "string",
+          "example": "2018-08-24T10:41:25.634852"
+        }
+      }
+    },
+    "Bucket": {
+      "type": "object",
+      "properties": {
+        "quantity": {
+          "type": "number",
+          "format": "integer",
+          "example": 10000000
+        },
+        "price": {
+          "type": "number",
+          "format": "double",
+          "example": 1.36473
+        }
+      }
+    }
+  }
+}

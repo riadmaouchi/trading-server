@@ -1,0 +1,11 @@
+http: 9997
+service:
+  - name: matchingengine
+    id: matchingengine
+    ports:
+      protocol: tcp
+      port: 8980
+    checks:
+      port: 9997
+      ttl: 3
+

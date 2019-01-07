@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "org.trading";
+option optimize_for = SPEED;
+package org.trading;
+
+enum OrderType {
+    UNKNOWN_ORDER_TYPE = 0;
+    MARKET = 1;
+    LIMIT = 2;
+}
+
+enum Side {
+    UNKNOWN_SIDE = 0;
+    BUY = 1;
+    SELL = 2;
+}
+
+message Message {
+    EventType evenType = 1;
+    SubmitOrder submitOrder = 2;
+    LimitOrderPlaced limitOrderPlaced = 3;
+    MarketOrderPlaced marketOrderPlaced = 4;
+    TradeExecuted tradeExecuted = 5;
+}
+
+message SubmitOrder {
+    string symbol = 2;
+    string broker  = 3;
+    int32 amount = 4;
+    Side side = 5;
+    OrderType orderType = 6;
+    double price = 7;
+}
+
+message LimitOrderPlaced {
+    string id = 1;
+    string broker  = 2;
+    int32 quantity = 3;
+    Side side = 4;
+    double limit = 5;
+    string symbol = 6;
+    google.protobuf.Timestamp time = 7;
+}
+
+message MarketOrderPlaced {
+    string id = 1;
+    string broker  = 2;
+    int32 quantity = 3;
+    Side side = 4;
+    string symbol = 5;
+    google.protobuf.Timestamp time = 6;
+}
+
+message TradeExecuted {
+    string buyingId = 1;
+    string buyingBroker  = 2;
+    string sellingId = 3;
+    string sellingBroker  = 4;
+    int32 quantity = 5;
+    double price = 6;
+    double buyingLimit = 7;
+    double sellingLimit = 8;
+    google.protobuf.Timestamp time = 9;
+    string symbol = 10;
+}
+
+enum EventType {
+    UNKNOWN_MESSAGE = 0;
+    SUBMIT_ORDER = 1;
+    LIMIT_ORDER_PLACED = 2;
+    MARKET_ORDER_PLACED = 3;
+    TRADE_EXECUTED = 4;
+}
+
+
+
