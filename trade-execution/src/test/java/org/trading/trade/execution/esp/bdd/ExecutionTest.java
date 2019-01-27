@@ -32,7 +32,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.trading.trade.execution.ExecutionRequestBuilder.anExecutionRequest;
+import static org.trading.trade.execution.TradeBuilder.aTrade;
+import static org.trading.trade.execution.bdd.model.OrderBuilder.aBuyLimitOrder;
+import static org.trading.trade.execution.bdd.model.OrderBuilder.aSellLimitOrder;
 
 @ExtendWith(DataProviderExtension.class)
 class ExecutionTest extends SimpleScenarioTest<ExecutionTest.ExecutionTestSteps> {
@@ -47,13 +49,13 @@ class ExecutionTest extends SimpleScenarioTest<ExecutionTest.ExecutionTestSteps>
 
         given().the_price_tolerance_for_execution_is(0.01)
                 .and().the_following_orders_have_been_submitted_in_this_order(
-                OrderBuilder.aSellLimitOrder().quantity("200000").price("1.24").build(),
-                OrderBuilder.aSellLimitOrder().quantity("500000").price("1.20").build(),
-                OrderBuilder.aSellLimitOrder().quantity("300000").price("1.22").build(),
-                OrderBuilder.aSellLimitOrder().quantity("200000").price("1.21").build()
+                aSellLimitOrder().quantity("200000").price("1.24").build(),
+                aSellLimitOrder().quantity("500000").price("1.20").build(),
+                aSellLimitOrder().quantity("300000").price("1.22").build(),
+                aSellLimitOrder().quantity("200000").price("1.21").build()
         );
 
-        when().a_buy_trade_request_is_made_for_a_quantity_of_$_at(1000000, price);
+        when().a_buy_trade_execution_is_submit_for_a_quantity_of_$_at(1000000, price);
 
         then().the_execution_is_accepted_at(1.208);
     }
@@ -68,13 +70,13 @@ class ExecutionTest extends SimpleScenarioTest<ExecutionTest.ExecutionTestSteps>
 
         given().the_price_tolerance_for_execution_is(0.01)
                 .and().the_following_orders_have_been_submitted_in_this_order(
-                OrderBuilder.aBuyLimitOrder().quantity("500000").price("1.20").build(),
-                OrderBuilder.aBuyLimitOrder().quantity("200000").price("1.21").build(),
-                OrderBuilder.aBuyLimitOrder().quantity("200000").price("1.19").build(),
-                OrderBuilder.aBuyLimitOrder().quantity("300000").price("1.22").build()
+                aBuyLimitOrder().quantity("500000").price("1.20").build(),
+                aBuyLimitOrder().quantity("200000").price("1.21").build(),
+                aBuyLimitOrder().quantity("200000").price("1.19").build(),
+                aBuyLimitOrder().quantity("300000").price("1.22").build()
         );
 
-        when().a_sell_trade_request_is_made_for_a_quantity_of_$_at(1000000, price);
+        when().a_sell_trade_execution_is_submit_for_a_quantity_of_$_at(1000000, price);
 
         then().the_execution_is_accepted_at(1.208);
     }
@@ -89,13 +91,13 @@ class ExecutionTest extends SimpleScenarioTest<ExecutionTest.ExecutionTestSteps>
 
         given().the_price_tolerance_for_execution_is(0.01)
                 .and().the_following_orders_have_been_submitted_in_this_order(
-                OrderBuilder.aSellLimitOrder().quantity("200000").price("1.24").build(),
-                OrderBuilder.aSellLimitOrder().quantity("500000").price("1.20").build(),
-                OrderBuilder.aSellLimitOrder().quantity("300000").price("1.22").build(),
-                OrderBuilder.aSellLimitOrder().quantity("200000").price("1.21").build()
+                aSellLimitOrder().quantity("200000").price("1.24").build(),
+                aSellLimitOrder().quantity("500000").price("1.20").build(),
+                aSellLimitOrder().quantity("300000").price("1.22").build(),
+                aSellLimitOrder().quantity("200000").price("1.21").build()
         );
 
-        when().a_buy_trade_request_is_made_for_a_quantity_of_$_at(1000000, price);
+        when().a_buy_trade_execution_is_submit_for_a_quantity_of_$_at(1000000, price);
 
         then().the_execution_is_rejected();
     }
@@ -109,13 +111,13 @@ class ExecutionTest extends SimpleScenarioTest<ExecutionTest.ExecutionTestSteps>
 
         given().the_price_tolerance_for_execution_is(0.01)
                 .and().the_following_orders_have_been_submitted_in_this_order(
-                OrderBuilder.aBuyLimitOrder().quantity("500000").price("1.20").build(),
-                OrderBuilder.aBuyLimitOrder().quantity("200000").price("1.21").build(),
-                OrderBuilder.aBuyLimitOrder().quantity("200000").price("1.19").build(),
-                OrderBuilder.aBuyLimitOrder().quantity("300000").price("1.22").build()
+                aBuyLimitOrder().quantity("500000").price("1.20").build(),
+                aBuyLimitOrder().quantity("200000").price("1.21").build(),
+                aBuyLimitOrder().quantity("200000").price("1.19").build(),
+                aBuyLimitOrder().quantity("300000").price("1.22").build()
         );
 
-        when().a_sell_trade_request_is_made_for_a_quantity_of_$_at(1000000, price);
+        when().a_sell_trade_execution_is_submit_for_a_quantity_of_$_at(1000000, price);
 
         then().the_execution_is_rejected();
     }
@@ -126,10 +128,10 @@ class ExecutionTest extends SimpleScenarioTest<ExecutionTest.ExecutionTestSteps>
 
         given().the_price_tolerance_for_execution_is(0.01)
                 .and().the_following_orders_have_been_submitted_in_this_order(
-                OrderBuilder.aSellLimitOrder().quantity("200000").price("1.24").build()
+                aSellLimitOrder().quantity("200000").price("1.24").build()
         );
 
-        when().a_buy_trade_request_is_made_for_a_quantity_of_$_at(1000000, 1.208);
+        when().a_buy_trade_execution_is_submit_for_a_quantity_of_$_at(1000000, 1.208);
 
         then().the_execution_is_rejected();
     }
@@ -171,20 +173,20 @@ class ExecutionTest extends SimpleScenarioTest<ExecutionTest.ExecutionTestSteps>
                     }).forEach(lastLook::onLimitOrderPlaced);
         }
 
-        void a_buy_trade_request_is_made_for_a_quantity_of_$_at(@Quoted int quantity, @Quoted double price) {
-            a_trade_request_is_made(quantity, price, Side.BUY);
+        void a_buy_trade_execution_is_submit_for_a_quantity_of_$_at(@Quoted int quantity, @Quoted double price) {
+            a_trade_execution_is_submit(quantity, price, Side.BUY);
         }
 
-        private void a_trade_request_is_made(int quantity, double price, Side side) {
-            lastLook.requestExecution(anExecutionRequest()
+        private void a_trade_execution_is_submit(int quantity, double price, Side side) {
+            lastLook.requestExecution(aTrade()
                     .withSide(side)
                     .withQuantity(quantity)
                     .withPrice(price)
                     .build());
         }
 
-        void a_sell_trade_request_is_made_for_a_quantity_of_$_at(@Quoted int quantity, @Quoted double price) {
-            a_trade_request_is_made(quantity, price, Side.SELL);
+        void a_sell_trade_execution_is_submit_for_a_quantity_of_$_at(@Quoted int quantity, @Quoted double price) {
+            a_trade_execution_is_submit(quantity, price, Side.SELL);
         }
 
         void the_execution_is_accepted_at(@Quoted double price) {

@@ -1,12 +1,8 @@
 package org.trading.trade.execution.esp.web.json;
 
 import net.minidev.json.JSONObject;
-import org.trading.trade.execution.esp.domain.ExecutionAccepted;
 import org.trading.trade.execution.esp.domain.ExecutionRejected;
 
-import java.time.format.DateTimeFormatter;
-
-import static java.time.format.DateTimeFormatter.*;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 public class ExecutionRejectedToJson {
@@ -21,6 +17,7 @@ public class ExecutionRejectedToJson {
         jsonObject.put("price", executionRejected.price);
         jsonObject.put("quantity", executionRejected.quantity);
         jsonObject.put("broker", executionRejected.broker);
+        jsonObject.put("reason", executionRejected.reason);
         return jsonObject;
     }
 }

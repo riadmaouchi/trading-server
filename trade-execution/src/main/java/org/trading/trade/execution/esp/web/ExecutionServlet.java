@@ -14,20 +14,32 @@ import org.trading.messaging.netty.TcpDataSource;
 import org.trading.trade.execution.esp.HedgingEventHandler;
 import org.trading.trade.execution.esp.ReportExecutionEventHandler;
 import org.trading.trade.execution.esp.TradeMessage;
+import org.trading.trade.execution.esp.TradeMessage.EventType.EventTypeVisitor;
 import org.trading.trade.execution.esp.TradePublisher;
+import org.trading.trade.execution.esp.domain.ExecutionAccepted;
+import org.trading.trade.execution.esp.domain.ExecutionRejected;
 import org.trading.trade.execution.esp.domain.ExecutionRequest;
 import org.trading.trade.execution.esp.domain.LastLook;
+import org.trading.trade.execution.esp.domain.Trade;
 import org.trading.trade.execution.esp.domain.TradeListener;
-import org.trading.trade.execution.esp.translate.ExecutionRequestTranslator;
+import org.trading.trade.execution.esp.translate.TradeTranslator;
+import org.trading.trade.execution.esp.web.json.ExecutionAcceptedToJson;
+import org.trading.trade.execution.esp.web.json.ExecutionRejectedToJson;
 import org.trading.trade.execution.esp.web.json.ExecutionRequestFromJson;
 import org.trading.web.SseEventDispatcher;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -49,6 +61,7 @@ public class ExecutionServlet extends HttpServlet implements EventHandler<Messag
     private final int port;
     private Disruptor<Message> disruptor;
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
+    private final Map<String, AsyncContext> contexts = new ConcurrentHashMap<>();
     private LastLook lastLook;
     private final Disruptor<Message> executionDisruptor;
 
@@ -77,9 +90,60 @@ public class ExecutionServlet extends HttpServlet implements EventHandler<Messag
 
         TradeListener tradeListener = new TradePublisher(outboundDisruptor);
 
+        EventHandler<TradeMessage> executionReporter = new EventHandler<>() {
+
+            private final ExecutionAcceptedToJson executionAcceptedToJson = new ExecutionAcceptedToJson();
+            private final ExecutionRejectedToJson executionRejectedToJson = new ExecutionRejectedToJson();
+
+            @Override
+            public void onEvent(TradeMessage tradeMessage, long sequence, boolean endOfBatch) throws Exception {
+
+                String id = tradeMessage.type.accept(new EventTypeVisitor<>() {
+                    @Override
+                    public String visitExecutionAccepted() {
+                        ExecutionAccepted executionAccepted = (ExecutionAccepted) tradeMessage.event;
+                        return executionAccepted.id;
+                    }
+
+                    @Override
+                    public String visitExecutionRejected() {
+                        ExecutionRejected executionRejected = (ExecutionRejected) tradeMessage.event;
+                        return executionRejected.id;
+                    }
+                });
+                String json = tradeMessage.type.accept(new EventTypeVisitor<>() {
+                    @Override
+                    public String visitExecutionAccepted() {
+                        ExecutionAccepted executionAccepted = (ExecutionAccepted) tradeMessage.event;
+                        return executionAcceptedToJson.toJson(executionAccepted).toJSONString();
+                    }
+
+                    @Override
+                    public String visitExecutionRejected() {
+                        ExecutionRejected executionRejected = (ExecutionRejected) tradeMessage.event;
+                        return executionRejectedToJson.toJson(executionRejected).toJSONString();
+                    }
+                });
+                AsyncContext context = contexts.get(id);
+                if (context != null) {
+                    LOGGER.info("context {}, ", context);
+                    LOGGER.info("response {}", context.getResponse());
+                    LOGGER.info("writer {}", context.getResponse().getWriter());
+                    context.getResponse().getWriter().write(json);
+                    HttpServletResponse resp = (HttpServletResponse) context.getResponse();
+                    resp.setContentType(APPLICATION_JSON.asString());
+                    resp.setStatus(SC_OK);
+                    resp.setContentLength(json.length());
+                    context.complete();
+                }
+            }
+        };
+
         outboundDisruptor.handleEventsWith(
                 new ReportExecutionEventHandler(eventDispatcher),
-                new HedgingEventHandler(executionDisruptor)
+                new HedgingEventHandler(executionDisruptor),
+                executionReporter
+
         );
         lastLook = new LastLook(tradeListener, 0.01);
         outboundDisruptor.start();
@@ -96,15 +160,45 @@ public class ExecutionServlet extends HttpServlet implements EventHandler<Messag
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         try {
+            String id = UUID.randomUUID().toString();
+            AsyncContext asyncContext = req.startAsync(req, resp);
+            asyncContext.setTimeout(2000);
+            asyncContext.addListener(new AsyncListener() {
+                @Override
+                public void onComplete(AsyncEvent event) throws IOException {
+                    contexts.remove(id);
+                }
+
+                @Override
+                public void onTimeout(AsyncEvent event) throws IOException {
+                    contexts.remove(id);
+                }
+
+                @Override
+                public void onError(AsyncEvent event) throws IOException {
+                    contexts.remove(id);
+                }
+
+                @Override
+                public void onStartAsync(AsyncEvent event) throws IOException {
+                }
+            });
+            contexts.put(id, asyncContext);
             JSONParser parser = new JSONParser(MODE_RFC4627);
             final JSONObject jsonObject = (JSONObject) parser.parse(req.getReader());
             LOGGER.info(jsonObject.toJSONString());
             ExecutionRequest executionRequest = executionRequestFromJson.toJson(jsonObject);
+            Trade trade = new Trade(
+                    id,
+                    executionRequest.broker,
+                    executionRequest.quantity,
+                    executionRequest.side,
+                    executionRequest.symbol,
+                    executionRequest.price
+            );
             executorService.submit(() -> {
-                executorService.schedule(() -> disruptor.publishEvent(ExecutionRequestTranslator::translateTo, executionRequest), 300, MILLISECONDS);
+                executorService.schedule(() -> disruptor.publishEvent(TradeTranslator::translateTo, trade), 300, MILLISECONDS);
             });
-            resp.setContentType(APPLICATION_JSON.asString());
-            resp.setStatus(SC_OK);
         } catch (ParseException e) {
             throw new ServletException("Invalid request", e);
         }
@@ -128,7 +222,7 @@ public class ExecutionServlet extends HttpServlet implements EventHandler<Messag
                 lastLook.onTradeExecuted(tradeExecuted);
                 break;
             case REQUEST_EXECUTION:
-                lastLook.requestExecution((ExecutionRequest) message.event);
+                lastLook.requestExecution((Trade) message.event);
                 break;
             default:
                 break;

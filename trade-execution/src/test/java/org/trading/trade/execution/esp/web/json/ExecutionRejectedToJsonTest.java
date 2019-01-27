@@ -3,14 +3,12 @@ package org.trading.trade.execution.esp.web.json;
 import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.trading.trade.execution.esp.domain.ExecutionAccepted;
 import org.trading.trade.execution.esp.domain.ExecutionRejected;
 
 import java.time.LocalDateTime;
 
 import static java.time.Month.JULY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.trading.api.command.Side.BUY;
 
 class ExecutionRejectedToJsonTest {
@@ -32,7 +30,8 @@ class ExecutionRejectedToJsonTest {
                 BUY,
                 1.323,
                 1_000,
-                "Broker"
+                "Broker",
+                "Last look"
         );
 
 
@@ -48,5 +47,6 @@ class ExecutionRejectedToJsonTest {
         assertThat(json.get("price")).isEqualTo(1.323);
         assertThat(json.get("quantity")).isEqualTo(1_000);
         assertThat(json.get("broker")).isEqualTo("Broker");
+        assertThat(json.get("reason")).isEqualTo("Last look");
     }
 }

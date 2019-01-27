@@ -8,7 +8,13 @@ import org.trading.api.event.LimitOrderPlaced;
 import org.trading.api.event.TradeExecuted;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static java.lang.String.format;
 
 public class LastLook {
     private final TradeListener tradeListener;
@@ -22,9 +28,9 @@ public class LastLook {
         this.tolerance = tolerance;
     }
 
-    public void requestExecution(ExecutionRequest executionRequest) {
-        MarketDepth marketDepth = depths.get(executionRequest.symbol);
-        Double2IntAVLTreeMap orders = executionRequest.side.accept(new Side.SideVisitor<>() {
+    public void requestExecution(Trade trade) {
+        MarketDepth marketDepth = depths.get(trade.symbol);
+        Double2IntAVLTreeMap orders = trade.side.accept(new Side.SideVisitor<>() {
             @Override
             public Double2IntAVLTreeMap visitBuy() {
                 return marketDepth.sellOrders;
@@ -39,47 +45,48 @@ public class LastLook {
                 .mapToInt(Number::intValue)
                 .sum();
 
-        if (liquidity < executionRequest.quantity) {
+        if (liquidity < trade.quantity) {
             ExecutionRejected executionRejected = new ExecutionRejected(
                     LocalDateTime.now(),
-                    UUID.randomUUID().toString(),
-                    executionRequest.symbol,
-                    executionRequest.side,
-                    executionRequest.price,
-                    executionRequest.quantity,
-                    executionRequest.broker
+                    trade.id,
+                    trade.symbol,
+                    trade.side,
+                    trade.price,
+                    trade.quantity,
+                    trade.broker,
+                    format("Insufficient liquidity : %s < %s", liquidity, trade.quantity)
             );
             tradeListener.onExecutionRejected(executionRejected);
             rejectedExecutions.add(executionRejected);
             return;
         }
 
-        double refreshPrice = computePrice(executionRequest.quantity, orders);
+        double refreshPrice = computePrice(trade.quantity, orders);
         double delta = refreshPrice * tolerance;
-        boolean isAccepted = executionRequest.price >= refreshPrice - delta && executionRequest.price <= refreshPrice + delta;
+        boolean isAccepted = trade.price >= refreshPrice - delta && trade.price <= refreshPrice + delta;
 
         if (isAccepted) {
             ExecutionAccepted executionAccepted = new ExecutionAccepted(
                     LocalDateTime.now(),
-                    UUID.randomUUID().toString(),
-                    executionRequest.symbol,
-                    executionRequest.side,
+                    trade.id,
+                    trade.symbol,
+                    trade.side,
                     refreshPrice,
-                    executionRequest.quantity,
-                    executionRequest.broker
+                    trade.quantity,
+                    trade.broker
             );
             tradeListener.onExecutionAccepted(executionAccepted);
             acceptedExecutions.add(executionAccepted);
         } else {
             ExecutionRejected executionRejected = new ExecutionRejected(
                     LocalDateTime.now(),
-                    UUID.randomUUID().toString(),
-                    executionRequest.symbol,
-                    executionRequest.side,
+                    trade.id,
+                    trade.symbol,
+                    trade.side,
                     refreshPrice,
-                    executionRequest.quantity,
-                    executionRequest.broker
-            );
+                    trade.quantity,
+                    trade.broker,
+                    format("Last look failed :  %s <> %s", trade.price, refreshPrice));
             tradeListener.onExecutionRejected(executionRejected);
             rejectedExecutions.add(executionRejected);
         }
@@ -134,7 +141,7 @@ public class LastLook {
         private final Double2IntAVLTreeMap buyOrders = new Double2IntAVLTreeMap(Comparator.reverseOrder());
         private final Double2IntAVLTreeMap sellOrders = new Double2IntAVLTreeMap(Double::compareTo);
 
-        public Double2IntAVLTreeMap orders(Side side) {
+        Double2IntAVLTreeMap orders(Side side) {
             return side.accept(new Side.SideVisitor<>() {
                 @Override
                 public Double2IntAVLTreeMap visitBuy() {

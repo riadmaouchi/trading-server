@@ -12,6 +12,7 @@ public class ExecutionRejected {
     public final double price;
     public final int quantity;
     public final String broker;
+    public final String reason;
 
     public ExecutionRejected(LocalDateTime tradeDate,
                              String id,
@@ -19,7 +20,8 @@ public class ExecutionRejected {
                              Side side,
                              double price,
                              int quantity,
-                             String broker) {
+                             String broker,
+                             String reason) {
         this.tradeDate = tradeDate;
         this.id = id;
         this.symbol = symbol;
@@ -27,5 +29,6 @@ public class ExecutionRejected {
         this.price = price;
         this.quantity = quantity;
         this.broker = broker;
+        this.reason = reason;
     }
 }

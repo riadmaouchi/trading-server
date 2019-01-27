@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class LastTradeExecuted {
     public final String symbol;
     public final double lastPrice;
-    public final double lastQuantity;
+    public final int lastQuantity;
     public final LocalDateTime time;
     public final double open;
     public final double high;
@@ -14,7 +14,7 @@ public class LastTradeExecuted {
 
     public LastTradeExecuted(String symbol,
                              double lastPrice,
-                             double lastQuantity,
+                             int lastQuantity,
                              LocalDateTime time,
                              double open,
                              double high,
@@ -32,7 +32,7 @@ public class LastTradeExecuted {
 
     public LastTradeExecuted(String symbol,
                              double lastPrice,
-                             double lastQuantity,
+                             int lastQuantity,
                              LocalDateTime time) {
         this(symbol, lastPrice, lastQuantity, time, 0, 0, 0, 0);
     }

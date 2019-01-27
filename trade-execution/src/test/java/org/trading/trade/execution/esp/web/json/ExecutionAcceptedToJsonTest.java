@@ -46,5 +46,6 @@ class ExecutionAcceptedToJsonTest {
         assertThat(json.get("price")).isEqualTo(1.323);
         assertThat(json.get("quantity")).isEqualTo(1_000);
         assertThat(json.get("broker")).isEqualTo("Broker");
+        assertThat(json.get("reason")).isEqualTo("");
     }
 }

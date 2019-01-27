@@ -17,6 +17,7 @@ public class ExecutionAcceptedToJson {
         jsonObject.put("price", executionAccepted.price);
         jsonObject.put("quantity", executionAccepted.quantity);
         jsonObject.put("broker", executionAccepted.broker);
+        jsonObject.put("reason", "");
         return jsonObject;
     }
 }

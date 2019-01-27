@@ -21,8 +21,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.lmax.disruptor.dsl.ProducerType.SINGLE;
 import static com.lmax.disruptor.util.DaemonThreadFactory.INSTANCE;
@@ -35,6 +38,8 @@ public class OrderBookServlet extends HttpServlet implements EventHandler<Messag
     private final SseEventDispatcher eventDispatcher = new SseEventDispatcher();
     private final OrderLevelToJson orderLevelToJson = new OrderLevelToJson();
     private final LastTradeToJson lastTradeToJson = new LastTradeToJson();
+    private final Map<String, JSONObject> lastTrades = new ConcurrentHashMap<>();
+
     private final OrderBook orderBook = new OrderBook(new OrderLevelListener() {
         @Override
         public void onOrderLevelUpdated(OrderLevelUpdated orderLevelUpdated) {
@@ -46,6 +51,14 @@ public class OrderBookServlet extends HttpServlet implements EventHandler<Messag
         public void onLastTradeExecuted(LastTradeExecuted lastTradeExecuted) {
             JSONObject json = lastTradeToJson.toJson(lastTradeExecuted);
             eventDispatcher.dispatchEvent("lastTradeUpdated", json.toJSONString());
+
+            lastTrades.merge(lastTradeExecuted.symbol, json, (value1, value2) -> {
+                        json.replace("lastQuantity", value1.getAsNumber("lastQuantity").intValue() + value2.getAsNumber("lastQuantity").intValue());
+                        return json;
+                    }
+
+            );
+
         }
     });
 
@@ -69,8 +82,13 @@ public class OrderBookServlet extends HttpServlet implements EventHandler<Messag
         new Timer().schedule(new TimerTask() {
             public void run() {
                 orderBook.updateIndicators();
+                lastTrades.forEach((symbol, json) -> {
+                    json.replace("time", LocalDateTime.now().toString());
+                    eventDispatcher.dispatchEvent("indicatorsUpdated", json.toJSONString());
+                });
+                lastTrades.clear();
             }
-        }, 1000 * 60 * 60L, 1000 * 60 * 60L);
+        }, 1000L, 1000L * 2L);
     }
 
     @Override

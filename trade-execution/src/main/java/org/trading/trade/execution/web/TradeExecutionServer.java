@@ -19,6 +19,7 @@ import org.trading.trade.execution.order.web.OrderServlet;
 import static com.lmax.disruptor.dsl.ProducerType.MULTI;
 import static com.lmax.disruptor.util.DaemonThreadFactory.INSTANCE;
 import static org.eclipse.jetty.servlet.ServletContextHandler.NO_SESSIONS;
+import static org.eclipse.jetty.servlets.CrossOriginFilter.*;
 import static org.trading.health.HealthCheckServer.register;
 import static org.trading.messaging.Message.FACTORY;
 
@@ -43,7 +44,14 @@ public class TradeExecutionServer {
         server = new Server(configuration.tradeServerPort());
         ServletContextHandler context = new ServletContextHandler(NO_SESSIONS);
         context.setContextPath("/");
-        context.addFilter(new FilterHolder(new CrossOriginFilter()), "/*", null);
+        CrossOriginFilter filter = new CrossOriginFilter();
+        FilterHolder filterHolder = new FilterHolder(filter);
+        filterHolder.setInitParameter(ALLOWED_ORIGINS_PARAM, "*");
+        filterHolder.setInitParameter(ACCESS_CONTROL_ALLOW_ORIGIN_HEADER, "*");
+        filterHolder.setInitParameter(ALLOWED_METHODS_PARAM, "OPTIONS,GET,POST,HEAD");
+        filterHolder.setInitParameter(ALLOWED_HEADERS_PARAM, "X-Requested-With,Content-Type,Accept,Origin,Cache-Control");
+        filterHolder.setInitParameter(CHAIN_PREFLIGHT_PARAM, "false");
+        context.addFilter(filterHolder, "/*", null);
 
         final ServletHolder pingServlet = new ServletHolder(new PingServlet());
         context.addServlet(pingServlet, "/v1/healthcheck");
@@ -62,7 +70,9 @@ public class TradeExecutionServer {
                 disruptor
         );
         final ServletHolder executionServletHolder = new ServletHolder(executionServlet);
+        executionServletHolder.setAsyncSupported(true);
         context.addServlet(executionServletHolder, "/v1/execution");
+
 
         final ServletHolder orderBookServletHolder = new ServletHolder(new OrderBookServlet());
         orderBookServletHolder.setAsyncSupported(true);
