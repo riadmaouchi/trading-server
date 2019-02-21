@@ -1,23 +1,22 @@
 package org.trading.pricing;
 
-import org.trading.discovery.Service;
+import org.trading.configuration.Configuration;
 import org.trading.discovery.RemoteProviderFactory.RemoteProvider;
+import org.trading.discovery.Service;
 import org.trading.discovery.ServiceConfiguration;
 import org.trading.health.HealthCheckServer;
-import org.trading.configuration.Configuration;
 import org.trading.pricing.web.PricingServer;
 import org.trading.pricing.web.PricingServer.PricingServerConfiguration;
 
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.System.getProperty;
 import static java.util.Optional.ofNullable;
+import static org.trading.configuration.Configuration.create;
 import static org.trading.discovery.RemoteProviderFactory.RemoteProvider.CONSUL;
 import static org.trading.discovery.RemoteProviderFactory.RemoteProvider.DEFAULT;
 import static org.trading.discovery.RemoteProviderFactory.getFactory;
-import static org.trading.configuration.Configuration.create;
 
 public final class PricingWebMain {
 
@@ -29,6 +28,7 @@ public final class PricingWebMain {
 
         String host = getProperty("docker.container.id", "localhost");
         String consulEnabled = getProperty("consul.enabled", "false");
+        String serviceUrl = getProperty("service.url", "localhost");
 
         String version = ofNullable(getClass().getPackage().getImplementationVersion())
                 .orElse("undefined");
@@ -48,7 +48,7 @@ public final class PricingWebMain {
                 serviceName.name,
                 httpMonitoringPort,
                 serviceName.protocol
-        )).forEach(service -> serviceConfiguration.register(service, host));
+        )).forEach(service -> serviceConfiguration.register(service, host, serviceUrl));
 
         HealthCheckServer healthCheckServer = new HealthCheckServer(host, httpMonitoringPort, version, name);
         healthCheckServer.start();

@@ -4,11 +4,8 @@ import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import net.minidev.json.JSONObject;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.trading.api.command.OrderType.OrderTypeVisitor;
 import org.trading.api.command.Side.SideVisitor;
 import org.trading.configuration.Configuration;
@@ -16,8 +13,12 @@ import org.trading.discovery.RemoteProviderFactory;
 import org.trading.discovery.Service;
 import org.trading.discovery.ServiceConfiguration;
 import org.trading.health.HealthCheckServer;
-import org.trading.market.command.*;
+import org.trading.market.command.Command;
 import org.trading.market.command.Command.EventType.EventTypeVisitor;
+import org.trading.market.command.LastTradePrice;
+import org.trading.market.command.SubmitLimitOrder;
+import org.trading.market.command.UpdateCurrencies;
+import org.trading.market.command.UpdatePrecision;
 import org.trading.market.domain.CommandListener;
 import org.trading.market.domain.MarketService;
 import org.trading.market.event.Event;
@@ -78,6 +79,7 @@ public final class MarketMain {
         Configuration configuration = create();
 
         int httpMonitoringPort = configuration.getInt("monitoring.port");
+        String serviceUrl = getProperty("service.url", "localhost");
 
         new HealthCheckServer(host, httpMonitoringPort, version, name).start();
 
@@ -90,7 +92,7 @@ public final class MarketMain {
                 "http"
         );
 
-        serviceConfiguration.register(service, host);
+        serviceConfiguration.register(service, host, serviceUrl);
 
         serviceConfiguration.discover("order");
 

@@ -1,7 +1,12 @@
 package org.trading.discovery.consul;
 
 import com.google.common.net.HostAndPort;
-import com.orbitz.consul.*;
+import com.orbitz.consul.AgentClient;
+import com.orbitz.consul.Consul;
+import com.orbitz.consul.ConsulException;
+import com.orbitz.consul.HealthClient;
+import com.orbitz.consul.KeyValueClient;
+import com.orbitz.consul.NotRegisteredException;
 import com.orbitz.consul.cache.ConsulCache;
 import com.orbitz.consul.cache.KVCache;
 import com.orbitz.consul.cache.ServiceHealthCache;
@@ -11,8 +16,12 @@ import com.orbitz.consul.model.health.ServiceHealth;
 import org.slf4j.Logger;
 import org.trading.discovery.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import static com.orbitz.consul.model.agent.Registration.RegCheck.ttl;
@@ -27,16 +36,18 @@ public class ConsulService {
     private HealthClient healthClient;
     private AgentClient agentClient;
     private final KVCache cache;
+    private final KeyValueClient kvClient;
 
     public ConsulService() {
         Consul consul = connectConsul();
         agentClient = consul.agentClient();
         healthClient = consul.healthClient();
-        cache = KVCache.newCache(consul.keyValueClient(), "/");
+        kvClient = consul.keyValueClient();
+        cache = KVCache.newCache(kvClient, "/");
         cache.start();
     }
 
-    public void register(Service service, String host) {
+    public void register(Service service, String host, String serviceUrl) {
 
         ImmutableRegistration registration = ImmutableRegistration.builder()
                 .name(service.name)
@@ -48,6 +59,7 @@ public class ConsulService {
                 .addTags(service.tags.toArray(new String[0]))
                 .build();
         agentClient.register(registration);
+        kvClient.putValue("service/url/" + service.id, service.tags.get(0) + "://" + serviceUrl + ":" + service.port);
         timer.scheduleAtFixedRate(new PingConsul(service), 0, 2000);
     }
 

@@ -1,6 +1,7 @@
 package org.trading.discovery.consul;
 
 import com.lmax.disruptor.dsl.Disruptor;
+import com.orbitz.consul.model.health.ServiceHealth;
 import org.slf4j.Logger;
 import org.trading.discovery.*;
 import org.trading.messaging.Message;
@@ -26,8 +27,8 @@ public class ConsulServiceConfiguration implements ServiceConfiguration {
     }
 
     @Override
-    public void register(Service service, String host) {
-        consulService.register(service, host);
+    public void register(Service service, String host, String serviceUrl) {
+        consulService.register(service, host, serviceUrl);
     }
 
     @Override
@@ -37,9 +38,9 @@ public class ConsulServiceConfiguration implements ServiceConfiguration {
             tcpHealthyNodes.put(service, new TcpNodes(disruptor));
 
             consulService.registerHealthyNodeListener(service, newValues -> {
-                List<Node> healthyTcpNodes = newValues.entrySet().stream()
-                        .filter(node -> node.getValue().getService().getTags().contains("tcp"))
-                        .map(node -> node.getValue().getService())
+                List<Node> healthyTcpNodes = newValues.values().stream()
+                        .filter(serviceHealth -> serviceHealth.getService().getTags().contains("tcp"))
+                        .map(ServiceHealth::getService)
                         .map(service1 -> new Node(
                                 service1.getId(),
                                 service1.getAddress(),
@@ -71,9 +72,9 @@ public class ConsulServiceConfiguration implements ServiceConfiguration {
         Stream.of(services).forEach(service -> {
             nodes.put(service, new Nodes());
             consulService.registerHealthyNodeListener(service, newValues -> {
-                List<String> healthyNodes = newValues.entrySet().stream()
-                        .filter(node -> node.getValue().getService().getTags().contains("http"))
-                        .map(node -> "http://" + node.getValue().getService().getAddress() + ":" + node.getValue().getService().getPort())
+                List<String> healthyNodes = newValues.values().stream()
+                        .filter(serviceHealth -> serviceHealth.getService().getTags().contains("http"))
+                        .map(serviceHealth -> "http://" + serviceHealth.getService().getAddress() + ":" + serviceHealth.getService().getPort())
                         .collect(toList());
 
                 LOGGER.info("{} : {}", service, healthyNodes);

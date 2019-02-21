@@ -33,7 +33,7 @@ public class DefaultServiceConfiguration implements ServiceConfiguration {
     }
 
     @Override
-    public void register(Service service, String host) {
+    public void register(Service service, String host, String serviceUrl) {
         //nop
     }
 

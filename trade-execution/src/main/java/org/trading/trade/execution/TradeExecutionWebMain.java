@@ -11,6 +11,7 @@ import org.trading.trade.execution.web.TradeExecutionServer.ServerConfiguration;
 import java.util.stream.Stream;
 
 import static java.lang.Boolean.parseBoolean;
+import static java.lang.System.getProperty;
 import static java.util.Optional.ofNullable;
 import static org.trading.configuration.Configuration.create;
 import static org.trading.discovery.RemoteProviderFactory.RemoteProvider.CONSUL;
@@ -33,6 +34,7 @@ public final class TradeExecutionWebMain {
 
         String host = System.getProperty("docker.container.id", "localhost");
         String consulEnabled = System.getProperty("consul.enabled", "false");
+        String serviceUrl = getProperty("service.url", "localhost");
 
         String version = ofNullable(getClass().getPackage().getImplementationVersion())
                 .orElse("undefined");
@@ -51,7 +53,7 @@ public final class TradeExecutionWebMain {
                 serviceName.name,
                 httpMonitoringPort,
                 serviceName.protocol
-        )).forEach(service -> serviceConfiguration.register(service, host));
+        )).forEach(service -> serviceConfiguration.register(service, host, serviceUrl));
 
         new HealthCheckServer(host, httpMonitoringPort, version, name).start();
 

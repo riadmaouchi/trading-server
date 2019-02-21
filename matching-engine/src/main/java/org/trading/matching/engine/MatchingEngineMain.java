@@ -52,6 +52,7 @@ public final class MatchingEngineMain {
 
         String host = getProperty("docker.container.id", "localhost");
         String consulEnabled = getProperty("consul.enabled", "false");
+        String serviceUrl = getProperty("service.url", "localhost");
 
         Configuration configuration = create();
         RemoteProviderFactory.RemoteProvider provider = parseBoolean(consulEnabled) ? CONSUL : DEFAULT;
@@ -75,7 +76,7 @@ public final class MatchingEngineMain {
                 "matchingengine",
                 httpMonitoringPort,
                 "tcp"
-        ), host);
+        ), host, serviceUrl);
 
         HealthCheckServer healthCheckServer = new HealthCheckServer(host, httpMonitoringPort, version, name);
         healthCheckServer.start();

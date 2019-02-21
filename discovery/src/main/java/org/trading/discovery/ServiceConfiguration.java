@@ -2,7 +2,6 @@ package org.trading.discovery;
 
 import com.lmax.disruptor.dsl.Disruptor;
 import org.trading.messaging.Message;
-import org.trading.discovery.Service;
 
 import java.util.Map;
 import java.util.Optional;
@@ -10,7 +9,7 @@ import java.util.function.Consumer;
 
 public interface ServiceConfiguration {
 
-    void register(Service service, String host);
+    void register(Service service, String host, String serviceUrl);
 
     void discover(Disruptor<Message> disruptor, String... services);
 

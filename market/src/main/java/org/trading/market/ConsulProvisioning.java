@@ -18,9 +18,11 @@ public class ConsulProvisioning {
         kvClient = consul.keyValueClient();
         kvClient.putValue("symbol/EURUSD/price", "1.1578");
         kvClient.putValue("symbol/EURGBP/price", "0.8813");
+        kvClient.putValue("symbol/EURJPY/price", "124.57");
         kvClient.putValue("symbol/EURUSD/precision", "5");
         kvClient.putValue("symbol/EURGBP/precision", "5");
-        kvClient.putValue("ladder/quantities", "1000000,5000000,10000000,25000000,50000000");
+        kvClient.putValue("symbol/EURJPY/precision", "3");
+        kvClient.putValue("ladder/quantities", "5000000,10000000,25000000");
 
     }
 }
