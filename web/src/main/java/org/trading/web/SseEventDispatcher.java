@@ -51,6 +51,11 @@ public class SseEventDispatcher {
                 contexts.remove(event.getAsyncContext());
             }
         });
+        try {
+            asyncContext.getResponse().flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
