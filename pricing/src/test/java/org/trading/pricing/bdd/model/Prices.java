@@ -10,7 +10,4 @@ public class Prices {
         this.bid = bid;
         this.ask = ask;
     }
-
-
-
 }

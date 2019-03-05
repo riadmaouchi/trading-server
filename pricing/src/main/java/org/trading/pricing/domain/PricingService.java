@@ -11,7 +11,12 @@ import org.trading.api.event.LimitOrderPlaced;
 import org.trading.api.event.TradeExecuted;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -22,6 +27,7 @@ public final class PricingService {
     private static final int DEFAULT_PRECISION = 5;
     private final PriceListener priceListener;
     private List<Integer> quantities;
+    private Map<String, Double> midPrices = new HashMap<>();
 
     private final Map<String, MarketDepth> depths = new HashMap<>();
     private static final Map<String, Integer> precisions = Map.of("EURUSD", 5, "EURGBP", 5, "EURJPY", 3);
@@ -35,7 +41,13 @@ public final class PricingService {
         MarketDepth marketDepth = depths.get(symbol);
         List<Price> buyPrice = computePrice(marketDepth.orders(BUY), precisions.getOrDefault(symbol, DEFAULT_PRECISION));
         List<Price> sellPrice = computePrice(marketDepth.orders(SELL), precisions.getOrDefault(symbol, DEFAULT_PRECISION));
-        Prices price = new Prices(symbol, LocalDateTime.now(), buyPrice, sellPrice);
+        Prices price = new Prices(
+                symbol,
+                LocalDateTime.now(),
+                buyPrice,
+                sellPrice,
+                midPrices.get(symbol)
+        );
         marketDepth.lastPrices = price;
         priceListener.onPrices(price);
     }
@@ -49,18 +61,18 @@ public final class PricingService {
         List<Price> asks = new ArrayList<>(quantities.size());
 
         Prices lastPrices = ofNullable(marketDepth.lastPrices)
-                .orElseGet(() -> new Prices(symbol, time, bids, asks));
+                .orElseGet(() -> new Prices(symbol, time, bids, asks,  midPrices.get(symbol)));
 
         Prices prices = side.accept(new SideVisitor<>() {
 
             @Override
             public Prices visitBuy() {
-                return new Prices(symbol, time, price, lastPrices.asks);
+                return new Prices(symbol, time, price, lastPrices.asks,  midPrices.get(symbol));
             }
 
             @Override
             public Prices visitSell() {
-                return new Prices(symbol, time, lastPrices.bids, price);
+                return new Prices(symbol, time, lastPrices.bids, price,  midPrices.get(symbol));
             }
         });
         if (!prices.asks.isEmpty() || !prices.bids.isEmpty()) {
@@ -96,13 +108,14 @@ public final class PricingService {
     }
 
     public void onLimitOrderPlaced(LimitOrderPlaced limitOrderPlaced) {
+        midPrices.putIfAbsent(limitOrderPlaced.symbol, limitOrderPlaced.price);
 
         depths.computeIfAbsent(limitOrderPlaced.symbol, symbol -> new MarketDepth())
                 .orders(limitOrderPlaced.side)
                 .merge(
                         limitOrderPlaced.price,
                         limitOrderPlaced.quantity,
-                        (initialQuantity, quantity) -> initialQuantity + quantity
+                        Integer::sum
                 );
         computePrice(limitOrderPlaced.symbol, limitOrderPlaced.side);
     }
@@ -117,13 +130,13 @@ public final class PricingService {
                 tradeExecuted.sellingLimit,
                 (price, quantity) -> quantity - tradeExecuted.quantity
         );
-
+        midPrices.put(tradeExecuted.symbol, tradeExecuted.price);
         computePrice(tradeExecuted.symbol);
     }
 
     public Collection<Prices> getLastPrices() {
-        return depths.entrySet().stream()
-                .map(e -> e.getValue().lastPrices)
+        return depths.values().stream()
+                .map(marketDepth -> marketDepth.lastPrices)
                 .filter(value -> ofNullable(value).isPresent())
                 .collect(toList());
     }

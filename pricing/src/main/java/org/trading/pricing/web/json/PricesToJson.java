@@ -17,6 +17,7 @@ public final class PricesToJson {
         JSONObject json = new JSONObject();
         json.put("symbol", price.symbol);
         json.put("time", price.time.toString());
+        json.put("mid", price.midMarketPrice);
         json.put("asks", toJson(price.asks));
         json.put("bids", toJson(price.bids));
         return json;

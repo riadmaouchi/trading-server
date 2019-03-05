@@ -9,7 +9,6 @@ import com.tngtech.jgiven.junit5.SimpleScenarioTest;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.trading.api.TradeExecutedBuilder;
 import org.trading.api.event.LimitOrderPlaced;
 import org.trading.pricing.bdd.format.CollectionFormatter;
 import org.trading.pricing.bdd.model.Order;
@@ -30,9 +29,15 @@ import static java.lang.Integer.parseInt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.trading.api.TradeExecutedBuilder.aTradeExecuted;
-import static org.trading.pricing.bdd.model.OrderBuilder.*;
+import static org.trading.pricing.bdd.model.OrderBuilder.aBuyLimitOrder;
+import static org.trading.pricing.bdd.model.OrderBuilder.aLimitOrder;
+import static org.trading.pricing.bdd.model.OrderBuilder.aSellLimitOrder;
 
 class PricingTest extends SimpleScenarioTest<PricingTest.PricingTestSteps> {
 
@@ -41,7 +46,7 @@ class PricingTest extends SimpleScenarioTest<PricingTest.PricingTestSteps> {
 
         given().the_ladder_quantities_are_defined_such_as(new IntArrayList(new int[]{1_000_000, 5_000_000}));
 
-        when().the_following_orders_have_been_submitted_in_this_order(
+        when().the_following_orders_are_submitted_in_this_order(
                 aSellLimitOrder().quantity("200000").price("1.24").build(),
                 aSellLimitOrder().quantity("500000").price("1.20").build(),
                 aSellLimitOrder().quantity("300000").price("1.22").build(),
@@ -58,7 +63,7 @@ class PricingTest extends SimpleScenarioTest<PricingTest.PricingTestSteps> {
 
         given().the_ladder_quantities_are_defined_such_as(new IntArrayList(new int[]{1_000_000, 5_000_000}));
 
-        when().the_following_orders_have_been_submitted_in_this_order(
+        when().the_following_orders_are_submitted_in_this_order(
                 aBuyLimitOrder().quantity("500000").price("1.20").build(),
                 aBuyLimitOrder().quantity("200000").price("1.21").build(),
                 aBuyLimitOrder().quantity("200000").price("1.19").build(),
@@ -83,7 +88,7 @@ class PricingTest extends SimpleScenarioTest<PricingTest.PricingTestSteps> {
                 aBuyLimitOrder().quantity("8000000").price("1.22").build()
         );
 
-        when().the_following_orders_are_submitted_in_this_order(
+        when().the_following_orders_are_executed_in_this_order(
                 aBuyLimitOrder().quantity("1000000").price("1.19").build()
         );
 
@@ -106,6 +111,30 @@ class PricingTest extends SimpleScenarioTest<PricingTest.PricingTestSteps> {
         then().no_price_is_computed();
     }
 
+    @Test
+    void mid_market_price_is_the_last_execution_price() {
+
+        given().the_ladder_quantities_are_defined_such_as(new IntArrayList(new int[]{1_000_000, 5_000_000, 10_000_000}));
+
+        when().the_following_orders_are_executed_in_this_order(
+                aBuyLimitOrder().quantity("1000000").price("1.19").build()
+        );
+
+        then().mid_market_price_is(1.19);
+    }
+
+    @Test
+    void mid_market_limit_price_without_execution() {
+
+        given().the_ladder_quantities_are_defined_such_as(new IntArrayList(new int[]{1_000_000, 5_000_000}));
+
+        when().the_following_orders_are_submitted_in_this_order(
+                aSellLimitOrder().quantity("1000000").price("1.24").build()
+        );
+
+        then().mid_market_price_is(1.24);
+    }
+
     static class PricingTestSteps extends Stage<PricingTestSteps> {
 
         private PricingService pricingService;
@@ -126,6 +155,12 @@ class PricingTest extends SimpleScenarioTest<PricingTest.PricingTestSteps> {
 
         void the_following_orders_have_been_submitted_in_this_order(@Table(columnTitles = {"Side", "Qty", "Prices"},
                 excludeFields = {"broker", "symbol"}) Order... orders) {
+            the_following_orders_are_submitted_in_this_order(orders);
+            reset(priceListener);
+        }
+
+        void the_following_orders_are_submitted_in_this_order(@Table(columnTitles = {"Side", "Qty", "Prices"},
+                excludeFields = {"broker", "symbol"}) Order... orders) {
             IntStream.range(0, orders.length)
                     .mapToObj(id -> {
                         final Order order = orders[id];
@@ -141,7 +176,7 @@ class PricingTest extends SimpleScenarioTest<PricingTest.PricingTestSteps> {
                     }).forEach(pricingService::onLimitOrderPlaced);
         }
 
-        void the_following_orders_are_submitted_in_this_order(@Table(columnTitles = {"Side", "Qty", "Prices"},
+        void the_following_orders_are_executed_in_this_order(@Table(columnTitles = {"Side", "Qty", "Prices"},
                 excludeFields = {"broker", "symbol"}) Order... orders) {
             the_following_orders_have_been_submitted_in_this_order(orders);
             Arrays.stream(orders).map(o -> aTradeExecuted()
@@ -173,6 +208,12 @@ class PricingTest extends SimpleScenarioTest<PricingTest.PricingTestSteps> {
 
             assertThat(price.asks).containsExactly(asks);
             assertThat(price.bids).containsExactly(bids);
+        }
+
+        void mid_market_price_is(double midMarketPrice){
+            verify(priceListener).onPrices(priceArgumentCaptor.capture());
+            org.trading.pricing.domain.Prices prices = priceArgumentCaptor.getValue();
+            assertThat(prices.midMarketPrice).isEqualTo(midMarketPrice);
         }
     }
 }

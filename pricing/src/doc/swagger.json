@@ -42,6 +42,10 @@
           "type": "string",
           "example": "EURUSD"
         },
+        "mid": {
+          "type": "number",
+          "example": 1.322
+        },
         "asks": {
           "type": "array",
           "$ref": "#/definitions/Bucket",
