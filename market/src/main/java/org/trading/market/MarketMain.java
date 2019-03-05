@@ -211,7 +211,7 @@ public final class MarketMain {
         new RandomExecutor(scheduledExecutorService, () -> inboundDisruptor.publishEvent((event, sequence) -> {
             event.type = SUBMIT_LIMIT_ORDER;
             event.event = new SubmitLimitOrder();
-        }), 1000);
+        }), 500);
     }
 
     private static void subscribe(ServiceConfiguration serviceConfiguration, Disruptor<Command> inboundDisruptor) {
