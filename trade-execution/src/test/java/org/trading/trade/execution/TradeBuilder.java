@@ -1,11 +1,10 @@
 package org.trading.trade.execution;
 
-import org.trading.api.command.Side;
-import org.trading.trade.execution.esp.domain.ExecutionRequest;
+import org.trading.api.message.Side;
 import org.trading.trade.execution.esp.domain.Trade;
 
-import static org.trading.api.command.Side.BUY;
-import static org.trading.api.command.Side.SELL;
+import static org.trading.api.message.Side.BUY;
+import static org.trading.api.message.Side.SELL;
 
 public final class TradeBuilder {
     private String id = "ID";

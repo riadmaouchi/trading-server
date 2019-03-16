@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.trading.trade.execution.order.event.OrderLevelUpdated;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.trading.api.command.Side.BUY;
+import static org.trading.api.message.Side.BUY;
 
 public class OrderLevelToJsonTest {
 

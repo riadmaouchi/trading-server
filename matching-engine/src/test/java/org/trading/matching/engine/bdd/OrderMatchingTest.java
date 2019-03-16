@@ -10,10 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.trading.api.command.OrderType.OrderTypeVisitor;
-import org.trading.api.command.SubmitOrder;
-import org.trading.api.event.TradeExecuted;
-import org.trading.api.service.OrderEventListener;
+import org.trading.api.message.OrderType.OrderTypeVisitor;
+import org.trading.api.message.SubmitOrder;
+import org.trading.eventstore.domain.IDRepository;
+import org.trading.eventstore.store.EventDispatcher;
+import org.trading.eventstore.store.EventStoreCache;
+import org.trading.eventstore.store.InMemoryEventStore;
+import org.trading.matching.engine.api.ExchangeResponseListener;
 import org.trading.matching.engine.bdd.model.Book;
 import org.trading.matching.engine.bdd.model.Order;
 import org.trading.matching.engine.bdd.tag.LimitOrder;
@@ -21,13 +24,25 @@ import org.trading.matching.engine.bdd.tag.MarketOrder;
 import org.trading.matching.engine.bdd.tag.MatchingOrders;
 import org.trading.matching.engine.bdd.tag.Trade;
 import org.trading.matching.engine.domain.MatchingEngine;
+import org.trading.matching.engine.domain.OrderBook;
+import org.trading.matching.engine.domain.OrderBook.MarketOrderRejected;
+import org.trading.matching.engine.domain.OrderBook.TradeExecuted;
+import org.trading.matching.engine.domain.OrderBookRepository;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.Spliterators.AbstractSpliterator;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -44,10 +59,17 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.Mockito.*;
-import static org.trading.api.command.SubmitOrder.aSubmitLimitOrder;
-import static org.trading.api.command.SubmitOrder.aSubmitMarketOrder;
-import static org.trading.matching.engine.bdd.model.Order.OrderRowBuilder.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.trading.api.message.OrderType.LIMIT;
+import static org.trading.api.message.OrderType.MARKET;
+import static org.trading.api.message.SubmitOrder.aSubmitLimitOrder;
+import static org.trading.api.message.SubmitOrder.aSubmitMarketOrder;
+import static org.trading.matching.engine.bdd.model.Order.OrderRowBuilder.aBuyLimitOrder;
+import static org.trading.matching.engine.bdd.model.Order.OrderRowBuilder.aBuyMarketOrder;
+import static org.trading.matching.engine.bdd.model.Order.OrderRowBuilder.aSellLimitOrder;
+import static org.trading.matching.engine.bdd.model.Order.OrderRowBuilder.aSellMarketOrder;
 
 @MatchingOrders
 @Trade
@@ -75,8 +97,7 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(
-                        new UUID(0, 1),
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 1),
                         "E",
                         new UUID(0, 2),
                         "C",
@@ -85,8 +106,9 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
                         buyOrderLimit,
                         10.7,
                         LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18),
-                        "EURUSD"
-                )
+                        "EURUSD",
+                        LIMIT,
+                        LIMIT)
         ).and().the_market_order_book_is(
                 new Book("A", "100", "10.4", "10.8", "200", "D"),
                 new Book("B", "200", "10.3", "", "", "")
@@ -114,7 +136,7 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(new UUID(0, 1), "A", new UUID(0, 1), "E", 100, expectedTradePrice, 10.4, sellOrderLimit, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD")
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 1), "A", new UUID(0, 1), "E", 100, expectedTradePrice, 10.4, sellOrderLimit, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", LIMIT, LIMIT)
         ).and().the_market_order_book_is(
                 new Book("B", "200", "10.3", "10.7", "100", "C"),
                 new Book("", "", "", "10.8", "200", "D")
@@ -137,8 +159,14 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(new UUID(0, 1), "E", new UUID(0, 2), "C", 100, 10.7, 10.8, 10.7, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD"),
-                new TradeExecuted(new UUID(0, 3), "E", new UUID(0, 4), "D", 200, 10.8, 10.8, 10.8, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD")
+                new org.trading.matching.engine.domain.Trade(
+                        new UUID(0, 1), "E", new UUID(0, 2), "C", 100, 10.7, 10.8, 10.7, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD",
+                        LIMIT,
+                        LIMIT),
+                new org.trading.matching.engine.domain.Trade(
+                        new UUID(0, 3), "E", new UUID(0, 4), "D", 200, 10.8, 10.8, 10.8, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD",
+                        LIMIT,
+                        LIMIT)
         ).and().the_market_order_book_is(
                 new Book("E", "50", "10.8", "", "", ""),
                 new Book("A", "100", "10.4", "", "", ""),
@@ -162,8 +190,8 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(new UUID(0, 1), "A", new UUID(0, 3), "E", 100, 10.4, 10.4, 10.3, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD"),
-                new TradeExecuted(new UUID(0, 2), "B", new UUID(0, 4), "E", 200, 10.3, 10.3, 10.3, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD")
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 1), "A", new UUID(0, 3), "E", 100, 10.4, 10.4, 10.3, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", LIMIT, LIMIT),
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 2), "B", new UUID(0, 4), "E", 200, 10.3, 10.3, 10.3, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", LIMIT, LIMIT)
         ).and().the_market_order_book_is(
                 new Book("", "", "", "10.3", "50", "E"),
                 new Book("", "", "", "10.7", "100", "C"),
@@ -187,7 +215,7 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(new UUID(0, 1), "E", new UUID(0, 2), "C", 100, 10.7, 10.7, 10.7, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD")
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 1), "E", new UUID(0, 2), "C", 100, 10.7, 10.7, 10.7, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", LIMIT, LIMIT)
         ).and().the_market_order_book_is(
                 new Book("E", "250", "10.7", "10.8", "200", "D"),
                 new Book("A", "100", "10.4", "", "", ""),
@@ -211,7 +239,7 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(new UUID(0, 1), "A", new UUID(0, 2), "E", 100, 10.4, 10.4, 10.4, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD")
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 1), "A", new UUID(0, 2), "E", 100, 10.4, 10.4, 10.4, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", LIMIT, LIMIT)
         ).and().the_market_order_book_is(
                 new Book("B", "200", "10.3", "10.4", "250", "E"),
                 new Book("", "", "", "10.7", "100", "C"),
@@ -228,15 +256,15 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
                 aBuyLimitOrder().broker("A").quantity("100").price("10.7").build(),
                 aBuyLimitOrder().broker("B").quantity("200").price("10.6").build(),
                 aBuyLimitOrder().broker("C").quantity("300").price("10.5").build(),
-                Order.OrderRowBuilder.aSellMarketOrder().broker("D").quantity("650").build()
+                aSellMarketOrder().broker("D").quantity("650").build()
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(new UUID(0, 1), "A", new UUID(0, 2), "D", 100, 10.7, 10.7, 0., LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD"),
-                new TradeExecuted(new UUID(0, 3), "B", new UUID(0, 4), "D", 200, 10.6, 10.6, 0., LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD"),
-                new TradeExecuted(new UUID(0, 5), "C", new UUID(0, 6), "D", 300, 10.5, 10.5, 0., LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD")
-        ).and().the_market_order_book_is(
-                new Book("", "", "", "MO", "50", "D")
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 1), "A", new UUID(0, 2), "D", 100, 10.7, 10.7, 0., LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", LIMIT, MARKET),
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 3), "B", new UUID(0, 4), "D", 200, 10.6, 10.6, 0., LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", LIMIT, MARKET),
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 5), "C", new UUID(0, 6), "D", 300, 10.5, 10.5, 0., LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", LIMIT, MARKET)
+        ).and().market_orders_are_partially_filled(
+                aSellMarketOrder().broker("D").quantity("650").openQuantity("50").build()
         );
     }
 
@@ -249,12 +277,12 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
                 aBuyLimitOrder().broker("A").quantity("100").price("10.7").build(),
                 aBuyLimitOrder().broker("B").quantity("200").price("10.6").build(),
                 aBuyLimitOrder().broker("C").quantity("300").price("10.5").build(),
-                Order.OrderRowBuilder.aSellMarketOrder().broker("D").quantity("150").build()
+                aSellMarketOrder().broker("D").quantity("150").build()
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(new UUID(0, 1), "A", new UUID(0, 3), "D", 100, 10.7, 10.7, 0., LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD"),
-                new TradeExecuted(new UUID(0, 2), "B", new UUID(0, 4), "D", 50, 10.6, 10.6, 0., LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD")
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 1), "A", new UUID(0, 3), "D", 100, 10.7, 10.7, 0., LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", LIMIT, MARKET),
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 2), "B", new UUID(0, 4), "D", 50, 10.6, 10.6, 0., LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", LIMIT, MARKET)
         ).and().the_market_order_book_is(
                 new Book("B", "150", "10.6", "", "", ""),
                 new Book("C", "300", "10.5", "", "", "")
@@ -274,11 +302,11 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(new UUID(0, 1), "D", new UUID(0, 2), "A", 100, 10.5, 0., 10.5, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD"),
-                new TradeExecuted(new UUID(0, 3), "D", new UUID(0, 4), "B", 200, 10.6, 0., 10.6, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD"),
-                new TradeExecuted(new UUID(0, 5), "D", new UUID(0, 6), "C", 300, 10.7, 0., 10.7, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD")
-        ).and().the_market_order_book_is(
-                new Book("D", "50", "MO", "", "", "")
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 1), "D", new UUID(0, 2), "A", 100, 10.5, 0., 10.5, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", MARKET, LIMIT),
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 3), "D", new UUID(0, 4), "B", 200, 10.6, 0., 10.6, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", MARKET, LIMIT),
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 5), "D", new UUID(0, 6), "C", 300, 10.7, 0., 10.7, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", MARKET, LIMIT)
+        ).and().market_orders_are_partially_filled(
+                aBuyMarketOrder().broker("D").quantity("650").openQuantity("50").build()
         );
     }
 
@@ -295,8 +323,8 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(new UUID(0, 1), "D", new UUID(0, 2), "A", 100, 10.5, 0., 10.5, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD"),
-                new TradeExecuted(new UUID(0, 3), "D", new UUID(0, 4), "B", 50, 10.6, 0., 10.6, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD")
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 1), "D", new UUID(0, 2), "A", 100, 10.5, 0., 10.5, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", MARKET, LIMIT),
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 3), "D", new UUID(0, 4), "B", 50, 10.6, 0., 10.6, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", MARKET, LIMIT)
         ).and().the_market_order_book_is(
                 new Book("", "", "", "10.6", "150", "B"),
                 new Book("", "", "", "10.7", "300", "C")
@@ -310,41 +338,54 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
 
         when().the_following_orders_have_been_submitted_in_this_order(
                 aBuyMarketOrder().broker("A").quantity("300").build(),
-                aBuyMarketOrder().broker("B").quantity("100").build(),
-                aBuyMarketOrder().broker("C").quantity("150").build(),
-                aSellLimitOrder().broker("D").quantity("250").price("10.7").build()
+                aSellLimitOrder().broker("B").quantity("250").price("10.7").build(),
+                aBuyMarketOrder().broker("C").quantity("200").build()
         );
 
         then().the_following_trades_are_generated(
-                new TradeExecuted(new UUID(0, 1), "A", new UUID(0, 2), "D", 250, 10.7, 0., 10.7, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD")
-        ).and().the_market_order_book_is(
-                new Book("A", "50", "MO", "", "", ""),
-                new Book("B", "100", "MO", "", "", ""),
-                new Book("C", "150", "MO", "", "", "")
+                new org.trading.matching.engine.domain.Trade(new UUID(0, 1), "C", new UUID(0, 2), "B", 200, 10.7, 0., 10.7, LocalDateTime.of(2018, JANUARY, 17, 12, 52, 18), "EURUSD", MARKET, LIMIT)
+        ).and().market_orders_are_not_filled(
+                aBuyMarketOrder().broker("A").quantity("300").openQuantity("300").build()
         );
     }
 
     static class OrderMatchingTestSteps extends Stage<OrderMatchingTestSteps> {
 
-        private MatchingEngine matchingEngine;
-        private OrderEventListener orderEventListener;
+        private ExchangeResponseListener exchangeResponseListener;
         private ArgumentCaptor<TradeExecuted> tradeCaptor;
+        private ArgumentCaptor<MarketOrderRejected> marketOrderRejectedCaptor;
+        private MatchingEngine matchingEngine;
 
         @BeforeStage
         public void before() {
-            orderEventListener = mock(OrderEventListener.class);
-            matchingEngine = new MatchingEngine(
-                    orderEventListener,
-                    provideFixedClock(
-                            2018,
-                            JANUARY,
-                            17,
-                            12,
-                            52,
-                            18
-                    )
-            );
+            exchangeResponseListener = mock(ExchangeResponseListener.class);
+            final OrderBookRepository repository = new OrderBookRepository(() -> new OrderBook(provideFixedClock(
+                    2018,
+                    JANUARY,
+                    17,
+                    12,
+                    52,
+                    18
+            )));
+            matchingEngine = new MatchingEngine(new IDRepository<>() {
+                private final Map<String, UUID> ids = new HashMap<>();
+
+                @Override
+                public void store(String key, UUID aggregateId) {
+                    ids.put(key, aggregateId);
+                }
+
+                @Override
+                public Optional<UUID> load(String key) {
+                    return Optional.ofNullable(ids.get(key));
+                }
+            }, new EventStoreCache<>(
+                    new EventDispatcher<OrderBook.OrderDomainEvent>(orderDomainEvent -> orderDomainEvent.accept(exchangeResponseListener)),
+                    new InMemoryEventStore(),
+                    repository));
             tradeCaptor = forClass(TradeExecuted.class);
+            marketOrderRejectedCaptor = forClass(MarketOrderRejected.class);
+            matchingEngine.orderBookConfig("EURUSD");
         }
 
         void the_following_orders_are_submitted_in_this_order(@Table(columnTitles = {"Broker", "Side", "Qty", "Price"}, excludeFields = {"type", "symbol", "openQuantity", "executedQuantity"}) Order... orders) {
@@ -414,19 +455,35 @@ class OrderMatchingTest extends SimpleScenarioTest<OrderMatchingTest.OrderMatchi
                     }, false);
         }
 
-        OrderMatchingTestSteps the_following_trades_are_generated(@Table(columnTitles = {"Buying broker", "Selling broker", "Qty", "Price"}, excludeFields = {"buyingId", "sellingId", "buyingLimit", "sellingLimit", "time", "symbol"}) TradeExecuted... tradeExecuteds) {
-            verify(orderEventListener, times(tradeExecuteds.length)).onTradeExecuted(tradeCaptor.capture());
+        OrderMatchingTestSteps the_following_trades_are_generated(
+                @Table(columnTitles = {"Buying broker", "Selling broker", "Qty", "Price"},
+                        excludeFields = {"buyingId", "sellingId", "buyingLimit", "sellingLimit", "time", "symbol", "buyingOrderType", "sellingOrderType"}) org.trading.matching.engine.domain.Trade... trade) {
+            verify(exchangeResponseListener, times(trade.length)).onTradeExecuted(tradeCaptor.capture());
             final List<TradeExecuted> tradeExecutedList = tradeCaptor.getAllValues();
-            assertThat(tradeExecutedList).usingElementComparatorIgnoringFields("buyingId", "sellingId").containsExactly(tradeExecuteds);
+            assertThat(tradeExecutedList).usingElementComparatorIgnoringFields("buyingId", "sellingId").extracting(e -> e.trade).containsExactly(trade);
             return self();
+        }
+
+        OrderMatchingTestSteps market_orders_are_partially_filled(@Table(columnTitles = {"Broker", "Side", "Qty", "Unfilled Qty", "Price"}, excludeFields = {"type", "symbol", "executedQuantity"}) Order... orders) {
+            verify(exchangeResponseListener, times(orders.length)).onMarketOrderRejected(marketOrderRejectedCaptor.capture());
+            List<MarketOrderRejected> marketOrders = marketOrderRejectedCaptor.getAllValues();
+            assertThat(marketOrders).extracting(o -> o.marketOrder.getOpenQuantity())
+                    .containsExactlyElementsOf(Stream.of(orders)
+                            .map(o -> parseInt(o.openQuantity))
+                            .collect(toList()));
+            return self();
+        }
+
+        OrderMatchingTestSteps market_orders_are_not_filled(@Table(columnTitles = {"Broker", "Side", "Qty", "Unfilled Qty", "Price"}, excludeFields = {"type", "symbol", "executedQuantity"}) Order... orders) {
+            return market_orders_are_partially_filled(orders);
         }
 
         void the_market_order_book_is(@Table(columnTitles = {
                 "Broker", "Qty", "Price", "Price", "Qty", "Broker"}) Book... orderBooks) {
 
             final List<Book> books = createOrderBook(
-                    matchingEngine.getBuyOrderBook().stream(),
-                    matchingEngine.getSellOrderBook().stream(),
+                    matchingEngine.forSymbol("EURUSD").get().getBuyOrders().stream(),
+                    matchingEngine.forSymbol("EURUSD").get().getSellOrders().stream(),
                     (buyOrder, sellOrder) -> new Book(
                             ofNullable(buyOrder).map(order -> order.broker).orElse(""),
                             ofNullable(buyOrder).map(order -> String.valueOf(order.getOpenQuantity())).orElse(""),

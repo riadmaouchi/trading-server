@@ -9,7 +9,7 @@ import com.tngtech.jgiven.junit5.SimpleScenarioTest;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.trading.api.event.LimitOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
 import org.trading.pricing.bdd.format.CollectionFormatter;
 import org.trading.pricing.bdd.model.Order;
 import org.trading.pricing.bdd.model.Prices;
@@ -164,7 +164,7 @@ class PricingTest extends SimpleScenarioTest<PricingTest.PricingTestSteps> {
             IntStream.range(0, orders.length)
                     .mapToObj(id -> {
                         final Order order = orders[id];
-                        return new LimitOrderPlaced(
+                        return new LimitOrderAccepted(
                                 new UUID(0, id),
                                 LocalDateTime.now(),
                                 order.broker,

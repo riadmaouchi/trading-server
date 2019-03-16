@@ -1,7 +1,7 @@
 package org.trading.trade.execution.order.domain;
 
 import it.unimi.dsi.fastutil.doubles.Double2ObjectOpenHashMap;
-import org.trading.api.command.Side;
+import org.trading.api.message.Side.SideVisitor;
 import org.trading.trade.execution.order.event.LastTradeExecuted;
 import org.trading.trade.execution.order.event.OrderLevelUpdated;
 
@@ -27,29 +27,28 @@ public class CurrencyPair {
     }
 
     public OrderLevelUpdated placeOrder(OrderLevelUpdated order) {
-        return order.side.accept(new Side.SideVisitor<>() {
+        return order.side.accept(new SideVisitor<>() {
             private final int quantity = order.quantity;
 
             @Override
             public OrderLevelUpdated visitBuy() {
-                return buyOrders.merge(order.price, order, increaseSize(quantity));
+                return buyOrders.merge(order.price, order, increaseSize());
             }
 
             @Override
             public OrderLevelUpdated visitSell() {
-                return sellOrders.merge(order.price, order, increaseSize(quantity));
+                return sellOrders.merge(order.price, order, increaseSize());
             }
         });
     }
 
     public OrderLevelUpdated executeOrder(OrderLevelUpdated order) {
 
-        return order.side.accept(new Side.SideVisitor<>() {
-            private final int quantity = order.quantity;
+        return order.side.accept(new SideVisitor<>() {
 
             @Override
             public OrderLevelUpdated visitBuy() {
-                OrderLevelUpdated orderLevelUpdated = buyOrders.merge(order.price, order, decreaseSize(quantity));
+                OrderLevelUpdated orderLevelUpdated = buyOrders.merge(order.price, order, decreaseSize());
                 buyOrders.double2ObjectEntrySet()
                         .removeIf(order -> order.getDoubleKey() == 0d);
                 return orderLevelUpdated;
@@ -57,7 +56,7 @@ public class CurrencyPair {
 
             @Override
             public OrderLevelUpdated visitSell() {
-                OrderLevelUpdated orderLevelUpdated = sellOrders.merge(order.price, order, decreaseSize(quantity));
+                OrderLevelUpdated orderLevelUpdated = sellOrders.merge(order.price, order, decreaseSize());
                 sellOrders.double2ObjectEntrySet()
                         .removeIf(order -> order.getDoubleKey() == 0d);
                 return orderLevelUpdated;
@@ -65,20 +64,20 @@ public class CurrencyPair {
         });
     }
 
-    private BiFunction<OrderLevelUpdated, OrderLevelUpdated, OrderLevelUpdated> increaseSize(int quantity) {
+    private BiFunction<OrderLevelUpdated, OrderLevelUpdated, OrderLevelUpdated> increaseSize() {
         return (previous, last) -> new OrderLevelUpdated(
                 previous.symbol,
                 previous.side,
-                previous.quantity + quantity,
+                previous.quantity + last.quantity,
                 previous.price
         );
     }
 
-    private BiFunction<OrderLevelUpdated, OrderLevelUpdated, OrderLevelUpdated> decreaseSize(int quantity) {
+    private BiFunction<OrderLevelUpdated, OrderLevelUpdated, OrderLevelUpdated> decreaseSize() {
         return (previous, last) -> new OrderLevelUpdated(
                 previous.symbol,
                 previous.side,
-                previous.quantity - quantity,
+                previous.quantity - last.quantity,
                 previous.price
         );
     }

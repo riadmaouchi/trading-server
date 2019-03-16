@@ -1,6 +1,7 @@
 package org.trading.api;
 
 import org.trading.api.event.TradeExecuted;
+import org.trading.api.message.OrderType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,6 +19,8 @@ public final class TradeExecutedBuilder {
     private double sellingLimit = 1.183726;
     private LocalDateTime time = LocalDateTime.of(2018, JULY, 1, 17, 5, 38);
     private String symbol = "EURUSD";
+    private OrderType buyingOrderType = OrderType.LIMIT;
+    private OrderType sellingOrderType = OrderType.LIMIT;
 
     private TradeExecutedBuilder() {
     }
@@ -37,7 +40,9 @@ public final class TradeExecutedBuilder {
                 buyingLimit,
                 sellingLimit,
                 time,
-                symbol
+                symbol,
+                buyingOrderType,
+                sellingOrderType
         );
     }
 
@@ -91,4 +96,13 @@ public final class TradeExecutedBuilder {
         return this;
     }
 
+    public TradeExecutedBuilder withBuyingOrderType(final OrderType buyingOrderType) {
+        this.buyingOrderType = buyingOrderType;
+        return this;
+    }
+
+    public TradeExecutedBuilder withSellingOrderType(final OrderType sellingOrderType) {
+        this.sellingOrderType = sellingOrderType;
+        return this;
+    }
 }

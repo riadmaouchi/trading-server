@@ -1,7 +1,9 @@
 package org.trading.messaging.serializer;
 
 import com.google.protobuf.util.Timestamps;
+import org.trading.MessageProvider;
 import org.trading.api.event.TradeExecuted;
+import org.trading.api.message.OrderType;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -11,7 +13,21 @@ import static java.time.ZoneOffset.UTC;
 
 public class TradeExecutedFromProtobuf {
 
-    public Either<String, TradeExecuted> fromProtobuf(org.trading.TradeExecuted tradeExecuted) {
+    private final OrderTypeFromProtobuf orderTypeFromProtobuf = new OrderTypeFromProtobuf();
+
+    public Either<String, TradeExecuted> fromProtobuf(MessageProvider.TradeExecuted tradeExecuted) {
+
+        Either<String, OrderType> buyingOrderTypeEither = orderTypeFromProtobuf.visit(tradeExecuted.getBuyingOrderType(), tradeExecuted.getBuyingOrderType());
+
+        if (buyingOrderTypeEither.isLeft()) {
+            return Either.left(buyingOrderTypeEither.left());
+        }
+
+        Either<String, OrderType> sellingOrderTypeEither = orderTypeFromProtobuf.visit(tradeExecuted.getSellingOrderType(), tradeExecuted.getSellingOrderType());
+
+        if (sellingOrderTypeEither.isLeft()) {
+            return Either.left(sellingOrderTypeEither.left());
+        }
 
         return Either.right(new org.trading.api.event.TradeExecuted(
                 UUID.fromString(tradeExecuted.getBuyingId()),
@@ -23,7 +39,9 @@ public class TradeExecutedFromProtobuf {
                 tradeExecuted.getBuyingLimit(),
                 tradeExecuted.getSellingLimit(),
                 LocalDateTime.ofInstant(Instant.ofEpochMilli(Timestamps.toMillis(tradeExecuted.getTime())), UTC),
-                tradeExecuted.getSymbol()
+                tradeExecuted.getSymbol(),
+                buyingOrderTypeEither.right(),
+                sellingOrderTypeEither.right()
         ));
     }
 }

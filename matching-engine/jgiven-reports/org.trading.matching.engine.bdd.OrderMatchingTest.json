@@ -1,0 +1,2550 @@
+{
+  "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+  "name": "Order Matching",
+  "scenarios": [
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_large_buy_order_partially",
+      "description": "match a large buy order partially",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.3, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.8, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.4"
+                        ],
+                        [
+                          "B",
+                          "BUY",
+                          "200",
+                          "10.3"
+                        ],
+                        [
+                          "C",
+                          "SELL",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "200",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 35794466
+            },
+            {
+              "name": "the following orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dE, side\u003dBUY, amount\u003d350, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "BUY",
+                          "350",
+                          "10.7"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 4059202
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dE, sellingId\u003d00000000-0000-0000-0000-000000000002, sellingBroker\u003dC, quantity\u003d100, price\u003d10.7, buyingLimit\u003d10.7, sellingLimit\u003d10.7, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "C",
+                          "100",
+                          "10.7"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 11717398
+            },
+            {
+              "name": "the market order book is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the market order book is"
+                },
+                {
+                  "value": "Book{buyBroker\u003dE, buyQuantity\u003d250, buyPrice\u003d10.7, sellBroker\u003dD, sellQuantity\u003d200, sellPrice\u003d10.8}, Book{buyBroker\u003dA, buyQuantity\u003d100, buyPrice\u003d10.4, sellBroker\u003d, sellQuantity\u003d, sellPrice\u003d}, Book{buyBroker\u003dB, buyQuantity\u003d200, buyPrice\u003d10.3, sellBroker\u003d, sellQuantity\u003d, sellPrice\u003d}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Qty",
+                          "Price",
+                          "Price",
+                          "Qty",
+                          "Broker"
+                        ],
+                        [
+                          "E",
+                          "250",
+                          "10.7",
+                          "10.8",
+                          "200",
+                          "D"
+                        ],
+                        [
+                          "A",
+                          "100",
+                          "10.4",
+                          "",
+                          "",
+                          ""
+                        ],
+                        [
+                          "B",
+                          "200",
+                          "10.3",
+                          "",
+                          "",
+                          ""
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5743679
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 287218094
+        }
+      ],
+      "durationInNanos": 287218094,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_large_buy_market_order_against_multiple_limit_orders",
+      "description": "match a large buy market order against multiple limit orders",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order",
+        "org.trading.matching.engine.bdd.tag.MarketOrder-Market Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.6, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dBUY, amount\u003d300, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d650, openQuantity\u003d10, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "B",
+                          "BUY",
+                          "200",
+                          "10.6"
+                        ],
+                        [
+                          "C",
+                          "BUY",
+                          "300",
+                          "10.5"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "650",
+                          "MO"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 11110888
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dA, sellingId\u003d00000000-0000-0000-0000-000000000002, sellingBroker\u003dD, quantity\u003d100, price\u003d10.7, buyingLimit\u003d10.7, sellingLimit\u003d0.0, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dMARKET, buyingOrderType\u003dLIMIT}, Trade{buyingId\u003d00000000-0000-0000-0000-000000000003, buyingBroker\u003dB, sellingId\u003d00000000-0000-0000-0000-000000000004, sellingBroker\u003dD, quantity\u003d200, price\u003d10.6, buyingLimit\u003d10.6, sellingLimit\u003d0.0, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dMARKET, buyingOrderType\u003dLIMIT}, Trade{buyingId\u003d00000000-0000-0000-0000-000000000005, buyingBroker\u003dC, sellingId\u003d00000000-0000-0000-0000-000000000006, sellingBroker\u003dD, quantity\u003d300, price\u003d10.5, buyingLimit\u003d10.5, sellingLimit\u003d0.0, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dMARKET, buyingOrderType\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "D",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "B",
+                          "D",
+                          "200",
+                          "10.6"
+                        ],
+                        [
+                          "C",
+                          "D",
+                          "300",
+                          "10.5"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 36982
+            },
+            {
+              "name": "market orders are partially filled",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "market orders are partially filled"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d650, openQuantity\u003d50, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Unfilled Qty",
+                          "Price"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "650",
+                          "50",
+                          "MO"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3925337
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 139813633
+        }
+      ],
+      "durationInNanos": 139813633,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_sell_market_order_against_multiple_limit_orders",
+      "description": "match a sell market order against multiple limit orders",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order",
+        "org.trading.matching.engine.bdd.tag.MarketOrder-Market Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d300, openQuantity\u003d10, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d250, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "300",
+                          "MO"
+                        ],
+                        [
+                          "B",
+                          "SELL",
+                          "250",
+                          "10.7"
+                        ],
+                        [
+                          "C",
+                          "BUY",
+                          "200",
+                          "MO"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 7735523
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dC, sellingId\u003d00000000-0000-0000-0000-000000000002, sellingBroker\u003dB, quantity\u003d200, price\u003d10.7, buyingLimit\u003d0.0, sellingLimit\u003d10.7, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "C",
+                          "B",
+                          "200",
+                          "10.7"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 51219
+            },
+            {
+              "name": "market orders are not filled",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "market orders are not filled"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d300, openQuantity\u003d300, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Unfilled Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "300",
+                          "300",
+                          "MO"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 4416404
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 70086456
+        }
+      ],
+      "durationInNanos": 70086456,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_small_sell_market_order_against_limit_orders",
+      "description": "match a small sell market order against limit orders",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order",
+        "org.trading.matching.engine.bdd.tag.MarketOrder-Market Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.6, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d300, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dBUY, amount\u003d150, openQuantity\u003d10, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "SELL",
+                          "100",
+                          "10.5"
+                        ],
+                        [
+                          "B",
+                          "SELL",
+                          "200",
+                          "10.6"
+                        ],
+                        [
+                          "C",
+                          "SELL",
+                          "300",
+                          "10.7"
+                        ],
+                        [
+                          "D",
+                          "BUY",
+                          "150",
+                          "MO"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 13156966
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dD, sellingId\u003d00000000-0000-0000-0000-000000000002, sellingBroker\u003dA, quantity\u003d100, price\u003d10.5, buyingLimit\u003d0.0, sellingLimit\u003d10.5, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dMARKET}, Trade{buyingId\u003d00000000-0000-0000-0000-000000000003, buyingBroker\u003dD, sellingId\u003d00000000-0000-0000-0000-000000000004, sellingBroker\u003dB, quantity\u003d50, price\u003d10.6, buyingLimit\u003d0.0, sellingLimit\u003d10.6, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "D",
+                          "A",
+                          "100",
+                          "10.5"
+                        ],
+                        [
+                          "D",
+                          "B",
+                          "50",
+                          "10.6"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 32804
+            },
+            {
+              "name": "the market order book is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the market order book is"
+                },
+                {
+                  "value": "Book{buyBroker\u003d, buyQuantity\u003d, buyPrice\u003d, sellBroker\u003dB, sellQuantity\u003d150, sellPrice\u003d10.6}, Book{buyBroker\u003d, buyQuantity\u003d, buyPrice\u003d, sellBroker\u003dC, sellQuantity\u003d300, sellPrice\u003d10.7}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Qty",
+                          "Price",
+                          "Price",
+                          "Qty",
+                          "Broker"
+                        ],
+                        [
+                          "",
+                          "",
+                          "",
+                          "10.6",
+                          "150",
+                          "B"
+                        ],
+                        [
+                          "",
+                          "",
+                          "",
+                          "10.7",
+                          "300",
+                          "C"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2425550
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 108394692
+        }
+      ],
+      "durationInNanos": 108394692,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_sell_order_large_enough_to_clear_the_buy_book",
+      "description": "match a sell order large enough to clear the buy book",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.3, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.8, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.4"
+                        ],
+                        [
+                          "B",
+                          "BUY",
+                          "200",
+                          "10.3"
+                        ],
+                        [
+                          "C",
+                          "SELL",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "200",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 14418249
+            },
+            {
+              "name": "the following orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dE, side\u003dSELL, amount\u003d350, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.3, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "SELL",
+                          "350",
+                          "10.3"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5539114
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dA, sellingId\u003d00000000-0000-0000-0000-000000000003, sellingBroker\u003dE, quantity\u003d100, price\u003d10.4, buyingLimit\u003d10.4, sellingLimit\u003d10.3, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dLIMIT}, Trade{buyingId\u003d00000000-0000-0000-0000-000000000002, buyingBroker\u003dB, sellingId\u003d00000000-0000-0000-0000-000000000004, sellingBroker\u003dE, quantity\u003d200, price\u003d10.3, buyingLimit\u003d10.3, sellingLimit\u003d10.3, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "E",
+                          "100",
+                          "10.4"
+                        ],
+                        [
+                          "B",
+                          "E",
+                          "200",
+                          "10.3"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 32793
+            },
+            {
+              "name": "the market order book is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the market order book is"
+                },
+                {
+                  "value": "Book{buyBroker\u003d, buyQuantity\u003d, buyPrice\u003d, sellBroker\u003dE, sellQuantity\u003d50, sellPrice\u003d10.3}, Book{buyBroker\u003d, buyQuantity\u003d, buyPrice\u003d, sellBroker\u003dC, sellQuantity\u003d100, sellPrice\u003d10.7}, Book{buyBroker\u003d, buyQuantity\u003d, buyPrice\u003d, sellBroker\u003dD, sellQuantity\u003d200, sellPrice\u003d10.8}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Qty",
+                          "Price",
+                          "Price",
+                          "Qty",
+                          "Broker"
+                        ],
+                        [
+                          "",
+                          "",
+                          "",
+                          "10.3",
+                          "50",
+                          "E"
+                        ],
+                        [
+                          "",
+                          "",
+                          "",
+                          "10.7",
+                          "100",
+                          "C"
+                        ],
+                        [
+                          "",
+                          "",
+                          "",
+                          "10.8",
+                          "200",
+                          "D"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1649119
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 106394858
+        }
+      ],
+      "durationInNanos": 106394858,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_buy_order_large_enough_to_clear_the_sell_book",
+      "description": "match a buy order large enough to clear the sell book",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.3, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.8, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.4"
+                        ],
+                        [
+                          "B",
+                          "BUY",
+                          "200",
+                          "10.3"
+                        ],
+                        [
+                          "C",
+                          "SELL",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "200",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 9818368
+            },
+            {
+              "name": "the following orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dE, side\u003dBUY, amount\u003d350, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.8, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "BUY",
+                          "350",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 6354160
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dE, sellingId\u003d00000000-0000-0000-0000-000000000002, sellingBroker\u003dC, quantity\u003d100, price\u003d10.7, buyingLimit\u003d10.8, sellingLimit\u003d10.7, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dLIMIT}, Trade{buyingId\u003d00000000-0000-0000-0000-000000000003, buyingBroker\u003dE, sellingId\u003d00000000-0000-0000-0000-000000000004, sellingBroker\u003dD, quantity\u003d200, price\u003d10.8, buyingLimit\u003d10.8, sellingLimit\u003d10.8, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "C",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "E",
+                          "D",
+                          "200",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 67509
+            },
+            {
+              "name": "the market order book is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the market order book is"
+                },
+                {
+                  "value": "Book{buyBroker\u003dE, buyQuantity\u003d50, buyPrice\u003d10.8, sellBroker\u003d, sellQuantity\u003d, sellPrice\u003d}, Book{buyBroker\u003dA, buyQuantity\u003d100, buyPrice\u003d10.4, sellBroker\u003d, sellQuantity\u003d, sellPrice\u003d}, Book{buyBroker\u003dB, buyQuantity\u003d200, buyPrice\u003d10.3, sellBroker\u003d, sellQuantity\u003d, sellPrice\u003d}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Qty",
+                          "Price",
+                          "Price",
+                          "Qty",
+                          "Broker"
+                        ],
+                        [
+                          "E",
+                          "50",
+                          "10.8",
+                          "",
+                          "",
+                          ""
+                        ],
+                        [
+                          "A",
+                          "100",
+                          "10.4",
+                          "",
+                          "",
+                          ""
+                        ],
+                        [
+                          "B",
+                          "200",
+                          "10.3",
+                          "",
+                          "",
+                          ""
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3292239
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 80316165
+        }
+      ],
+      "durationInNanos": 80316165,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_single_sell_order_against_identical_in_quantity_outstanding_buy_order",
+      "description": "match a single sell order against identical in quantity outstanding buy order",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.3, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.8, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.4"
+                        ],
+                        [
+                          "B",
+                          "BUY",
+                          "200",
+                          "10.3"
+                        ],
+                        [
+                          "C",
+                          "SELL",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "200",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 9796466
+            },
+            {
+              "name": "the following orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dE, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "SELL",
+                          "100",
+                          "10.4"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3026786
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dA, sellingId\u003d00000000-0000-0000-0000-000000000001, sellingBroker\u003dE, quantity\u003d100, price\u003d10.4, buyingLimit\u003d10.4, sellingLimit\u003d10.4, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "E",
+                          "100",
+                          "10.4"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 85398
+            },
+            {
+              "name": "the market order book is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the market order book is"
+                },
+                {
+                  "value": "Book{buyBroker\u003dB, buyQuantity\u003d200, buyPrice\u003d10.3, sellBroker\u003dC, sellQuantity\u003d100, sellPrice\u003d10.7}, Book{buyBroker\u003d, buyQuantity\u003d, buyPrice\u003d, sellBroker\u003dD, sellQuantity\u003d200, sellPrice\u003d10.8}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Qty",
+                          "Price",
+                          "Price",
+                          "Qty",
+                          "Broker"
+                        ],
+                        [
+                          "B",
+                          "200",
+                          "10.3",
+                          "10.7",
+                          "100",
+                          "C"
+                        ],
+                        [
+                          "",
+                          "",
+                          "",
+                          "10.8",
+                          "200",
+                          "D"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3110334
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 54876354
+        },
+        {
+          "caseNr": 2,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.3, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.8, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.4"
+                        ],
+                        [
+                          "B",
+                          "BUY",
+                          "200",
+                          "10.3"
+                        ],
+                        [
+                          "C",
+                          "SELL",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "200",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 7436071
+            },
+            {
+              "name": "the following orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dE, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.3, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "SELL",
+                          "100",
+                          "10.3"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5030859
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dA, sellingId\u003d00000000-0000-0000-0000-000000000001, sellingBroker\u003dE, quantity\u003d100, price\u003d10.4, buyingLimit\u003d10.4, sellingLimit\u003d10.3, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "E",
+                          "100",
+                          "10.4"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 32228
+            },
+            {
+              "name": "the market order book is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the market order book is"
+                },
+                {
+                  "value": "Book{buyBroker\u003dB, buyQuantity\u003d200, buyPrice\u003d10.3, sellBroker\u003dC, sellQuantity\u003d100, sellPrice\u003d10.7}, Book{buyBroker\u003d, buyQuantity\u003d, buyPrice\u003d, sellBroker\u003dD, sellQuantity\u003d200, sellPrice\u003d10.8}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Qty",
+                          "Price",
+                          "Price",
+                          "Qty",
+                          "Broker"
+                        ],
+                        [
+                          "B",
+                          "200",
+                          "10.3",
+                          "10.7",
+                          "100",
+                          "C"
+                        ],
+                        [
+                          "",
+                          "",
+                          "",
+                          "10.8",
+                          "200",
+                          "D"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2305786
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 57965211
+        }
+      ],
+      "durationInNanos": 112841565
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_single_buy_order_against_identical_in_quantity_outstanding_sell_order",
+      "description": "match a single buy order against identical in quantity outstanding sell order",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.3, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.8, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.4"
+                        ],
+                        [
+                          "B",
+                          "BUY",
+                          "200",
+                          "10.3"
+                        ],
+                        [
+                          "C",
+                          "SELL",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "200",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 7036453
+            },
+            {
+              "name": "the following orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dE, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "BUY",
+                          "100",
+                          "10.7"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 4547232
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dE, sellingId\u003d00000000-0000-0000-0000-000000000002, sellingBroker\u003dC, quantity\u003d100, price\u003d10.7, buyingLimit\u003d10.7, sellingLimit\u003d10.7, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "C",
+                          "100",
+                          "10.7"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 37409
+            },
+            {
+              "name": "the market order book is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the market order book is"
+                },
+                {
+                  "value": "Book{buyBroker\u003dA, buyQuantity\u003d100, buyPrice\u003d10.4, sellBroker\u003dD, sellQuantity\u003d200, sellPrice\u003d10.8}, Book{buyBroker\u003dB, buyQuantity\u003d200, buyPrice\u003d10.3, sellBroker\u003d, sellQuantity\u003d, sellPrice\u003d}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Qty",
+                          "Price",
+                          "Price",
+                          "Qty",
+                          "Broker"
+                        ],
+                        [
+                          "A",
+                          "100",
+                          "10.4",
+                          "10.8",
+                          "200",
+                          "D"
+                        ],
+                        [
+                          "B",
+                          "200",
+                          "10.3",
+                          "",
+                          "",
+                          ""
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2869947
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 52871712
+        },
+        {
+          "caseNr": 2,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.3, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.8, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.4"
+                        ],
+                        [
+                          "B",
+                          "BUY",
+                          "200",
+                          "10.3"
+                        ],
+                        [
+                          "C",
+                          "SELL",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "200",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 11769018
+            },
+            {
+              "name": "the following orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dE, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.8, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "BUY",
+                          "100",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 4727400
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dE, sellingId\u003d00000000-0000-0000-0000-000000000002, sellingBroker\u003dC, quantity\u003d100, price\u003d10.7, buyingLimit\u003d10.8, sellingLimit\u003d10.7, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "C",
+                          "100",
+                          "10.7"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 71962
+            },
+            {
+              "name": "the market order book is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the market order book is"
+                },
+                {
+                  "value": "Book{buyBroker\u003dA, buyQuantity\u003d100, buyPrice\u003d10.4, sellBroker\u003dD, sellQuantity\u003d200, sellPrice\u003d10.8}, Book{buyBroker\u003dB, buyQuantity\u003d200, buyPrice\u003d10.3, sellBroker\u003d, sellQuantity\u003d, sellPrice\u003d}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Qty",
+                          "Price",
+                          "Price",
+                          "Qty",
+                          "Broker"
+                        ],
+                        [
+                          "A",
+                          "100",
+                          "10.4",
+                          "10.8",
+                          "200",
+                          "D"
+                        ],
+                        [
+                          "B",
+                          "200",
+                          "10.3",
+                          "",
+                          "",
+                          ""
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3059514
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 61600027
+        }
+      ],
+      "durationInNanos": 114471739
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_small_buy_market_order_against_limit_orders",
+      "description": "match a small buy market order against limit orders",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order",
+        "org.trading.matching.engine.bdd.tag.MarketOrder-Market Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.6, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dBUY, amount\u003d300, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d150, openQuantity\u003d10, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "B",
+                          "BUY",
+                          "200",
+                          "10.6"
+                        ],
+                        [
+                          "C",
+                          "BUY",
+                          "300",
+                          "10.5"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "150",
+                          "MO"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5990476
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dA, sellingId\u003d00000000-0000-0000-0000-000000000003, sellingBroker\u003dD, quantity\u003d100, price\u003d10.7, buyingLimit\u003d10.7, sellingLimit\u003d0.0, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dMARKET, buyingOrderType\u003dLIMIT}, Trade{buyingId\u003d00000000-0000-0000-0000-000000000002, buyingBroker\u003dB, sellingId\u003d00000000-0000-0000-0000-000000000004, sellingBroker\u003dD, quantity\u003d50, price\u003d10.6, buyingLimit\u003d10.6, sellingLimit\u003d0.0, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dMARKET, buyingOrderType\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "D",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "B",
+                          "D",
+                          "50",
+                          "10.6"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 62578
+            },
+            {
+              "name": "the market order book is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the market order book is"
+                },
+                {
+                  "value": "Book{buyBroker\u003dB, buyQuantity\u003d150, buyPrice\u003d10.6, sellBroker\u003d, sellQuantity\u003d, sellPrice\u003d}, Book{buyBroker\u003dC, buyQuantity\u003d300, buyPrice\u003d10.5, sellBroker\u003d, sellQuantity\u003d, sellPrice\u003d}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Qty",
+                          "Price",
+                          "Price",
+                          "Qty",
+                          "Broker"
+                        ],
+                        [
+                          "B",
+                          "150",
+                          "10.6",
+                          "",
+                          "",
+                          ""
+                        ],
+                        [
+                          "C",
+                          "300",
+                          "10.5",
+                          "",
+                          "",
+                          ""
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2441394
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 63103819
+        }
+      ],
+      "durationInNanos": 63103819,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_large_sell_market_order_against_multiple_limit_orders",
+      "description": "match a large sell market order against multiple limit orders",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order",
+        "org.trading.matching.engine.bdd.tag.MarketOrder-Market Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.6, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d300, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dBUY, amount\u003d650, openQuantity\u003d10, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "SELL",
+                          "100",
+                          "10.5"
+                        ],
+                        [
+                          "B",
+                          "SELL",
+                          "200",
+                          "10.6"
+                        ],
+                        [
+                          "C",
+                          "SELL",
+                          "300",
+                          "10.7"
+                        ],
+                        [
+                          "D",
+                          "BUY",
+                          "650",
+                          "MO"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 9215056
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dD, sellingId\u003d00000000-0000-0000-0000-000000000002, sellingBroker\u003dA, quantity\u003d100, price\u003d10.5, buyingLimit\u003d0.0, sellingLimit\u003d10.5, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dMARKET}, Trade{buyingId\u003d00000000-0000-0000-0000-000000000003, buyingBroker\u003dD, sellingId\u003d00000000-0000-0000-0000-000000000004, sellingBroker\u003dB, quantity\u003d200, price\u003d10.6, buyingLimit\u003d0.0, sellingLimit\u003d10.6, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dMARKET}, Trade{buyingId\u003d00000000-0000-0000-0000-000000000005, buyingBroker\u003dD, sellingId\u003d00000000-0000-0000-0000-000000000006, sellingBroker\u003dC, quantity\u003d300, price\u003d10.7, buyingLimit\u003d0.0, sellingLimit\u003d10.7, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "D",
+                          "A",
+                          "100",
+                          "10.5"
+                        ],
+                        [
+                          "D",
+                          "B",
+                          "200",
+                          "10.6"
+                        ],
+                        [
+                          "D",
+                          "C",
+                          "300",
+                          "10.7"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 31451
+            },
+            {
+              "name": "market orders are partially filled",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "market orders are partially filled"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dD, side\u003dBUY, amount\u003d650, openQuantity\u003d50, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Unfilled Qty",
+                          "Price"
+                        ],
+                        [
+                          "D",
+                          "BUY",
+                          "650",
+                          "50",
+                          "MO"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2132897
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 96945351
+        }
+      ],
+      "durationInNanos": 96945351,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderMatchingTest",
+      "testMethodName": "match_a_large_sell_order_partially",
+      "description": "match a large sell order partially",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders",
+        "org.trading.matching.engine.bdd.tag.Trade-Trade",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.3, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.7, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d200, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.8, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.4"
+                        ],
+                        [
+                          "B",
+                          "BUY",
+                          "200",
+                          "10.3"
+                        ],
+                        [
+                          "C",
+                          "SELL",
+                          "100",
+                          "10.7"
+                        ],
+                        [
+                          "D",
+                          "SELL",
+                          "200",
+                          "10.8"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5649776
+            },
+            {
+              "name": "the following orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dE, side\u003dSELL, amount\u003d350, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "E",
+                          "SELL",
+                          "350",
+                          "10.4"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3027557
+            },
+            {
+              "name": "the following trades are generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following trades are generated"
+                },
+                {
+                  "value": "Trade{buyingId\u003d00000000-0000-0000-0000-000000000001, buyingBroker\u003dA, sellingId\u003d00000000-0000-0000-0000-000000000002, sellingBroker\u003dE, quantity\u003d100, price\u003d10.4, buyingLimit\u003d10.4, sellingLimit\u003d10.4, time\u003d2018-01-17T12:52:18, symbol\u003dEURUSD, sellingOrderType\u003dLIMIT, buyingOrderType\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Buying broker",
+                          "Selling broker",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "A",
+                          "E",
+                          "100",
+                          "10.4"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 32465
+            },
+            {
+              "name": "the market order book is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the market order book is"
+                },
+                {
+                  "value": "Book{buyBroker\u003dB, buyQuantity\u003d200, buyPrice\u003d10.3, sellBroker\u003dE, sellQuantity\u003d250, sellPrice\u003d10.4}, Book{buyBroker\u003d, buyQuantity\u003d, buyPrice\u003d, sellBroker\u003dC, sellQuantity\u003d100, sellPrice\u003d10.7}, Book{buyBroker\u003d, buyQuantity\u003d, buyPrice\u003d, sellBroker\u003dD, sellQuantity\u003d200, sellPrice\u003d10.8}",
+                  "argumentInfo": {
+                    "argumentName": "arg0",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Broker",
+                          "Qty",
+                          "Price",
+                          "Price",
+                          "Qty",
+                          "Broker"
+                        ],
+                        [
+                          "B",
+                          "200",
+                          "10.3",
+                          "10.4",
+                          "250",
+                          "E"
+                        ],
+                        [
+                          "",
+                          "",
+                          "",
+                          "10.7",
+                          "100",
+                          "C"
+                        ],
+                        [
+                          "",
+                          "",
+                          "",
+                          "10.8",
+                          "200",
+                          "D"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2650327
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 48036469
+        }
+      ],
+      "durationInNanos": 48036469,
+      "executionStatus": "SUCCESS"
+    }
+  ],
+  "tagMap": {
+    "org.trading.matching.engine.bdd.tag.MatchingOrders-Matching Orders": {
+      "fullType": "org.trading.matching.engine.bdd.tag.MatchingOrders",
+      "type": "MatchingOrders",
+      "name": "Feature",
+      "value": "Matching Orders",
+      "description": "The process for executing securities trades by pairing buy orders with sell orders. Matching orders utilize algorithms which determine how orders are matched and in what order they are filled",
+      "color": "#A9D0F5",
+      "href": ""
+    },
+    "org.trading.matching.engine.bdd.tag.Trade-Trade": {
+      "fullType": "org.trading.matching.engine.bdd.tag.Trade",
+      "type": "Trade",
+      "name": "Feature",
+      "value": "Trade",
+      "description": "Trade is a basic economic concept involving the buying and selling of goods and services, with compensation paid by a buyer to a seller, or the exchange of goods or services between parties",
+      "color": "#F7BE81",
+      "href": ""
+    },
+    "org.trading.matching.engine.bdd.tag.Order-Order": {
+      "fullType": "org.trading.matching.engine.bdd.tag.Order",
+      "type": "Order",
+      "name": "Feature",
+      "value": "Order",
+      "description": "",
+      "color": "#D87296",
+      "href": ""
+    },
+    "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order": {
+      "fullType": "org.trading.matching.engine.bdd.tag.LimitOrder",
+      "type": "LimitOrder",
+      "value": "Limit Order",
+      "description": "Limit order is a take-profit order placed with a bank or brokerage to buy or sell a set amount of a financial instrument at a specified price or better",
+      "color": "#9BD55D",
+      "tags": [
+        "org.trading.matching.engine.bdd.tag.Order-Order"
+      ],
+      "href": ""
+    },
+    "org.trading.matching.engine.bdd.tag.MarketOrder-Market Order": {
+      "fullType": "org.trading.matching.engine.bdd.tag.MarketOrder",
+      "type": "MarketOrder",
+      "value": "Market Order",
+      "description": "An investor makes a market order through a broker or brokerage service to buy or sell an investment immediately at the best available current price",
+      "color": "#CE71D9",
+      "tags": [
+        "org.trading.matching.engine.bdd.tag.Order-Order"
+      ],
+      "href": ""
+    }
+  }
+}

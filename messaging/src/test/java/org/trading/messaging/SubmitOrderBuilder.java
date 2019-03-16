@@ -1,11 +1,11 @@
 package org.trading.messaging;
 
-import org.trading.OrderType;
-import org.trading.Side;
-import org.trading.SubmitOrder;
+import org.trading.MessageProvider.OrderType;
+import org.trading.MessageProvider.Side;
+import org.trading.MessageProvider.SubmitOrder;
 
-import static org.trading.OrderType.LIMIT;
-import static org.trading.OrderType.MARKET;
+import static org.trading.MessageProvider.OrderType.LIMIT;
+import static org.trading.MessageProvider.OrderType.MARKET;
 
 public final class SubmitOrderBuilder {
     private String symbol = "EURUSD";

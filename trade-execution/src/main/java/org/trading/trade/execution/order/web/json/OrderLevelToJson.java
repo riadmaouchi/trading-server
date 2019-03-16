@@ -1,7 +1,6 @@
 package org.trading.trade.execution.order.web.json;
 
 import net.minidev.json.JSONObject;
-import org.trading.api.event.LimitOrderPlaced;
 import org.trading.trade.execution.order.event.OrderLevelUpdated;
 
 public class OrderLevelToJson {

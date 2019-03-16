@@ -34,7 +34,7 @@
 
         <dependency>
             <groupId>org.trading</groupId>
-            <artifactId>configuration</artifactId>
+            <artifactId>health</artifactId>
         </dependency>
 
         <dependency>
@@ -63,21 +63,27 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
-        <!-- <dependency>
-             <groupId>org.junit.platform</groupId>
-             <artifactId>junit-platform-runner</artifactId>
-         </dependency>-->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.trading</groupId>
+            <artifactId>api</artifactId>
+            <type>test-jar</type>
+        </dependency>
+
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.tngtech.junit.dataprovider</groupId>
-            <artifactId>junit-jupiter-dataprovider</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.junit.dataprovider</groupId>
+            <artifactId>junit-jupiter-dataprovider</artifactId>
         </dependency>
         <dependency>
             <groupId>com.tngtech.jgiven</groupId>
@@ -86,11 +92,6 @@
         <dependency>
             <groupId>com.tngtech.jgiven</groupId>
             <artifactId>jgiven-html5-report</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.trading</groupId>
-            <artifactId>api</artifactId>
-            <type>test-jar</type>
         </dependency>
     </dependencies>
 
@@ -137,21 +138,12 @@
                 </configuration>
             </plugin>
 
-
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/config</directory>
+            </resource>
+        </resources>
     </build>
-
-    <profiles>
-        <profile>
-            <id>local</id>
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/config</directory>
-                    </resource>
-                </resources>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

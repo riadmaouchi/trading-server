@@ -1,7 +1,8 @@
 package org.trading.messaging;
 
 import com.google.protobuf.Timestamp;
-import org.trading.TradeExecuted;
+import org.trading.MessageProvider.OrderType;
+import org.trading.MessageProvider.TradeExecuted;
 
 public final class TradeExecutedBuilder {
     private String buyingId = "00000000-0000-0000-0000-000000000001";
@@ -14,6 +15,8 @@ public final class TradeExecutedBuilder {
     private double sellingLimit = 1.183726;
     private Timestamp time = Timestamp.newBuilder().setSeconds(10000000L).build();
     private String symbol = "EURUSD";
+    private OrderType buyingOrderType = OrderType.LIMIT;
+    private OrderType sellingOrderType = OrderType.MARKET;
 
     private TradeExecutedBuilder() {
     }
@@ -34,6 +37,8 @@ public final class TradeExecutedBuilder {
                 .setSellingLimit(sellingLimit)
                 .setTime(time)
                 .setSymbol(symbol)
+                .setBuyingOrderType(buyingOrderType)
+                .setSellingOrderType(sellingOrderType)
                 .build();
     }
 
@@ -84,6 +89,16 @@ public final class TradeExecutedBuilder {
 
     public TradeExecutedBuilder withSymbol(final String symbol) {
         this.symbol = symbol;
+        return this;
+    }
+
+    public TradeExecutedBuilder withBuyingOrderType(final OrderType buyingOrderType) {
+        this.buyingOrderType = buyingOrderType;
+        return this;
+    }
+
+    public TradeExecutedBuilder withSellingOrderType(final OrderType sellingOrderType) {
+        this.sellingOrderType = sellingOrderType;
         return this;
     }
 

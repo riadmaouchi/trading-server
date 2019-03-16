@@ -1,6 +1,6 @@
 package org.trading.matching.engine.domain;
 
-import org.trading.api.command.Side;
+import org.trading.api.message.Side;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,5 +25,4 @@ public final class MarketOrder extends Order {
     public <R> R accept(OrderVisitor<R> visitor) {
         return visitor.visitMarketOrder(this);
     }
-
 }

@@ -4,13 +4,14 @@ import com.tngtech.junit.dataprovider.DataProviderExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.trading.api.command.SubmitOrder;
+import org.trading.MessageProvider;
+import org.trading.api.message.SubmitOrder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.trading.api.command.OrderType.LIMIT;
-import static org.trading.api.command.OrderType.MARKET;
-import static org.trading.api.command.Side.BUY;
-import static org.trading.api.command.Side.SELL;
+import static org.trading.api.message.OrderType.LIMIT;
+import static org.trading.api.message.OrderType.MARKET;
+import static org.trading.api.message.Side.BUY;
+import static org.trading.api.message.Side.SELL;
 import static org.trading.messaging.SubmitOrderBuilder.aLimitOrder;
 import static org.trading.messaging.SubmitOrderBuilder.aMarketOrder;
 
@@ -28,11 +29,11 @@ class SubmitOrderFromProtobufTest {
     void should_convert_market_order() {
 
         // Given
-        org.trading.SubmitOrder submitOrder = aMarketOrder()
+        MessageProvider.SubmitOrder submitOrder = aMarketOrder()
                 .withAmount(5_000)
                 .withBroker("broker")
                 .withSymbol("EURUSD")
-                .withSide(org.trading.Side.BUY)
+                .withSide(MessageProvider.Side.BUY)
                 .build();
 
         // When
@@ -51,12 +52,12 @@ class SubmitOrderFromProtobufTest {
     void should_convert_limit_order() {
 
         // Given
-        org.trading.SubmitOrder submitOrder = aLimitOrder()
+        MessageProvider.SubmitOrder submitOrder = aLimitOrder()
                 .withAmount(5_000)
                 .withBroker("broker")
                 .withSymbol("EURUSD")
                 .withPrice(1.2344)
-                .withSide(org.trading.Side.SELL)
+                .withSide(MessageProvider.Side.SELL)
                 .build();
 
         // When

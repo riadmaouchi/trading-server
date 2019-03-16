@@ -1,18 +1,20 @@
 package org.trading.api;
 
-import org.trading.EventType;
+import org.trading.MessageProvider.EventType;
 
 public interface MessageTypeVisitor<T, R> {
 
     R visitSubmitOrder(T t);
 
-    R visitLimitOrderPlaced(T t);
+    R visitLimitOrderAccepted(T t);
 
-    R visitMarketOrderPlaced(T t);
+    R visitMarketOrderAccepted(T t);
 
     R visitTradeExecuted(T t);
 
     R visitUnknownValue(T t);
+
+    R visitMarketOrderRejected(T t);
 
     default R visit(EventType eventType, T t) {
         R result;
@@ -21,11 +23,14 @@ public interface MessageTypeVisitor<T, R> {
             case SUBMIT_ORDER:
                 result = visitSubmitOrder(t);
                 break;
-            case LIMIT_ORDER_PLACED:
-                result = visitLimitOrderPlaced(t);
+            case LIMIT_ORDER_ACCEPTED:
+                result = visitLimitOrderAccepted(t);
                 break;
-            case MARKET_ORDER_PLACED:
-                result = visitMarketOrderPlaced(t);
+            case MARKET_ORDER_ACCEPTED:
+                result = visitMarketOrderAccepted(t);
+                break;
+            case MARKET_ORDER_REJECTED:
+                result = visitMarketOrderRejected(t);
                 break;
             case TRADE_EXECUTED:
                 result = visitTradeExecuted(t);

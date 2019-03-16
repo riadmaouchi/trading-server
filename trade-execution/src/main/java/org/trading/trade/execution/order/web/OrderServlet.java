@@ -4,6 +4,7 @@ import com.lmax.disruptor.dsl.Disruptor;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.slf4j.Logger;
 import org.trading.messaging.Message;
 import org.trading.trade.execution.order.web.json.SubmitOrderFromJson;
 
@@ -14,11 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static net.minidev.json.parser.JSONParser.MODE_RFC4627;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class OrderServlet extends HttpServlet {
-
+    private static final Logger LOGGER = getLogger(OrderServlet.class);
     private final SubmitOrderFromJson submitOrderFromJson = new SubmitOrderFromJson();
     private final Disruptor<Message> disruptor;
 
@@ -32,7 +35,7 @@ public class OrderServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
         try {
             JSONParser parser = new JSONParser(MODE_RFC4627);
             final JSONObject jsonObject = (JSONObject) parser.parse(req.getReader());
@@ -42,8 +45,13 @@ public class OrderServlet extends HttpServlet {
             });
             resp.setContentType("application/json");
             resp.setStatus(SC_OK);
-        } catch (ParseException e) {
-            throw new ServletException("Invalid request", e);
+        } catch (ParseException | IOException e) {
+            LOGGER.warn("Invalid request", e);
+            try {
+                resp.sendError(SC_BAD_REQUEST, "Invalid request");
+            } catch (IOException ex) {
+                LOGGER.error("Invalid request", e);
+            }
         }
     }
 }

@@ -3,9 +3,11 @@ package org.trading.trade.execution.order.web;
 import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.dsl.Disruptor;
-import org.trading.api.event.LimitOrderPlaced;
-import org.trading.api.event.MarketOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
+import org.trading.api.event.MarketOrderAccepted;
+import org.trading.api.event.MarketOrderRejected;
 import org.trading.api.event.TradeExecuted;
+import org.trading.health.HealthCheckServer;
 import org.trading.messaging.Message;
 import org.trading.messaging.netty.TcpDataSource;
 import org.trading.trade.execution.order.domain.Blotter;
@@ -28,10 +30,16 @@ public class BlotterServlet extends HttpServlet implements EventHandler<Message>
     private Disruptor<Message> disruptor;
     private final SseEventDispatcher eventDispatcher = new SseEventDispatcher();
     private final OrderUpdatedToJson orderUpdatedToJson = new OrderUpdatedToJson();
-    private final Blotter blotter = new Blotter(orderUpdated -> {
-        String json = orderUpdatedToJson.toJson(orderUpdated).toJSONString();
-        eventDispatcher.dispatchEvent("orderEvent", json);
-    });
+    private final Blotter blotter;
+    private final HealthCheckServer healthCheckServer;
+
+    public BlotterServlet(HealthCheckServer healthCheckServer) {
+        this.healthCheckServer = healthCheckServer;
+        blotter = new Blotter(orderUpdated -> {
+            final String json = orderUpdatedToJson.toJson(orderUpdated).toJSONString();
+            eventDispatcher.dispatchEvent("orderEvent", json);
+        });
+    }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -44,7 +52,8 @@ public class BlotterServlet extends HttpServlet implements EventHandler<Message>
                 host,
                 port,
                 disruptor,
-                "Blotter"
+                "Blotter",
+                healthCheckServer
         );
         tcpDataSource.connect();
 
@@ -66,17 +75,21 @@ public class BlotterServlet extends HttpServlet implements EventHandler<Message>
     public void onEvent(Message message, long sequence, boolean endOfBatch) {
         final Message.EventType eventType = message.type;
         switch (eventType) {
-            case LIMIT_ORDER_PLACED:
-                final LimitOrderPlaced limitOrderPlaced = (LimitOrderPlaced) message.event;
-                blotter.onLimitOrderPlaced(limitOrderPlaced);
+            case LIMIT_ORDER_ACCEPTED:
+                final LimitOrderAccepted limitOrderAccepted = (LimitOrderAccepted) message.event;
+                blotter.onLimitOrderPlaced(limitOrderAccepted);
                 break;
-            case MARKET_ORDER_PLACED:
-                final MarketOrderPlaced marketOrderPlaced = (MarketOrderPlaced) message.event;
+            case MARKET_ORDER_ACCEPTED:
+                final MarketOrderAccepted marketOrderPlaced = (MarketOrderAccepted) message.event;
                 blotter.onMarketOrderPlaced(marketOrderPlaced);
                 break;
             case TRADE_EXECUTED:
                 final TradeExecuted tradeExecuted = (TradeExecuted) message.event;
                 blotter.onTradeExecuted(tradeExecuted);
+                break;
+            case MARKET_ORDER_REJECTED:
+                final MarketOrderRejected marketOrderRejected = (MarketOrderRejected) message.event;
+                blotter.onMarketOrderRejected(marketOrderRejected);
                 break;
             case SUBSCRIBE:
                 // final String id = ((String) message.event);

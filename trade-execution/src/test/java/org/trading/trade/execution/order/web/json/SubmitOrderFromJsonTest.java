@@ -8,9 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.trading.OrderType;
-import org.trading.Side;
-import org.trading.SubmitOrder;
+import org.trading.MessageProvider.OrderType;
+import org.trading.MessageProvider.Side;
+import org.trading.MessageProvider.SubmitOrder;
 import org.trading.trade.execution.SubmitOrderBuilder;
 
 import static java.lang.Double.NaN;

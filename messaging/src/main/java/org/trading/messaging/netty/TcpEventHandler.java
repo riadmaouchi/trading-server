@@ -3,7 +3,14 @@ package org.trading.messaging.netty;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.LifecycleAware;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -12,20 +19,31 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
-import org.trading.*;
+import org.trading.MessageProvider;
+import org.trading.MessageProvider.EventType;
+import org.trading.MessageProvider.LimitOrderAccepted;
+import org.trading.MessageProvider.MarketOrderAccepted;
+import org.trading.MessageProvider.MarketOrderRejected;
+import org.trading.MessageProvider.SubmitOrder;
+import org.trading.MessageProvider.TradeExecuted;
+import org.trading.health.HealthCheckServer;
 import org.trading.messaging.Message;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 import static com.codahale.metrics.health.HealthCheck.Result.healthy;
 import static com.codahale.metrics.health.HealthCheck.Result.unhealthy;
-import static io.netty.channel.ChannelOption.*;
+import static io.netty.channel.ChannelOption.SO_KEEPALIVE;
+import static io.netty.channel.ChannelOption.SO_REUSEADDR;
+import static io.netty.channel.ChannelOption.TCP_NODELAY;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.trading.health.HealthCheckServer.register;
 
 @ChannelHandler.Sharable
 public class TcpEventHandler extends ChannelInboundHandlerAdapter implements EventHandler<Message>, LifecycleAware {
@@ -33,16 +51,45 @@ public class TcpEventHandler extends ChannelInboundHandlerAdapter implements Eve
     private final Bootstrap bootstrap = new Bootstrap();
     private final Timer timer = new Timer();
     private final InetSocketAddress socketAddress;
-    protected final CountDownLatch shutdownLatch = new CountDownLatch(1);
+    private final Supplier<List<MessageProvider.Message>> supplier;
+    private final CountDownLatch shutdownLatch = new CountDownLatch(1);
     private Channel channel;
     private AtomicBoolean connected = new AtomicBoolean(false);
     private ChannelHandlerContext ctx;
+    private final List<MessageProvider.Message> pendingMessages = new ArrayList<>();
 
     public TcpEventHandler(String host,
                            int port,
-                           String id) {
-        this(new InetSocketAddress(host, port), id);
+                           String id,
+                           Supplier<List<MessageProvider.Message>> supplier,
+                           HealthCheckServer healthCheckServer) {
+        this(new InetSocketAddress(host, port), id, supplier, healthCheckServer);
 
+    }
+
+    private TcpEventHandler(InetSocketAddress socketAddress,
+                            String id,
+                            Supplier<List<MessageProvider.Message>> supplier,
+                            HealthCheckServer healthCheckServer) {
+        this.socketAddress = socketAddress;
+        LOGGER.error("Socket Address {}", socketAddress);
+        this.supplier = supplier;
+        healthCheckServer.register(id + " publisher", new HealthCheck());
+        bootstrap.group(new NioEventLoopGroup())
+                .channel(NioSocketChannel.class)
+                .option(SO_KEEPALIVE, true)
+                .option(TCP_NODELAY, true)
+                .option(SO_REUSEADDR, true)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    public void initChannel(SocketChannel ch) {
+                        ChannelPipeline p = ch.pipeline();
+                        p.addLast(new LoggingHandler(LogLevel.INFO));
+                        p.addLast(new ProtobufVarint32LengthFieldPrepender());
+                        p.addLast(new ProtobufEncoder());
+                        p.addLast(TcpEventHandler.this);
+                    }
+                });
     }
 
     public void awaitShutdown() throws InterruptedException {
@@ -61,29 +108,10 @@ public class TcpEventHandler extends ChannelInboundHandlerAdapter implements Eve
         scheduleConnect(1000);
     }
 
-    private TcpEventHandler(InetSocketAddress socketAddress, String id) {
-        this.socketAddress = socketAddress;
-        register(id + " publisher", new HealthCheck());
-        bootstrap.group(new NioEventLoopGroup())
-                .channel(NioSocketChannel.class)
-                .option(SO_KEEPALIVE, true)
-                .option(TCP_NODELAY, true)
-                .option(SO_REUSEADDR, true)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel ch) {
-                        ChannelPipeline p = ch.pipeline();
-                        p.addLast(new LoggingHandler(LogLevel.INFO));
-                        p.addLast(new ProtobufVarint32LengthFieldPrepender());
-                        p.addLast(new ProtobufEncoder());
-                        p.addLast(TcpEventHandler.this);
-                    }
-                });
-    }
 
     @Override
     public void onEvent(Message event, long sequence, boolean endOfBatch) {
-        org.trading.Message.Builder messageBuilder = org.trading.Message.newBuilder();
+        MessageProvider.Message.Builder messageBuilder = MessageProvider.Message.newBuilder();
 
         event.type.accept(new Message.EventType.EventTypeVisitor<Void>() {
             @Override
@@ -99,16 +127,23 @@ public class TcpEventHandler extends ChannelInboundHandlerAdapter implements Eve
             }
 
             @Override
-            public Void visitMarketOrderPlaced() {
-                messageBuilder.setEvenType(EventType.MARKET_ORDER_PLACED);
-                messageBuilder.setMarketOrderPlaced((MarketOrderPlaced) event.event);
+            public Void visitMarketOrderAccepted() {
+                messageBuilder.setEvenType(EventType.MARKET_ORDER_ACCEPTED);
+                messageBuilder.setMarketOrderAccepted((MarketOrderAccepted) event.event);
                 return null;
             }
 
             @Override
-            public Void visitLimitOrderPlaced() {
-                messageBuilder.setEvenType(EventType.LIMIT_ORDER_PLACED);
-                messageBuilder.setLimitOrderPlaced((LimitOrderPlaced) event.event);
+            public Void visitLimitOrderAccepted() {
+                messageBuilder.setEvenType(EventType.LIMIT_ORDER_ACCEPTED);
+                messageBuilder.setLimitOrderAccepted((LimitOrderAccepted) event.event);
+                return null;
+            }
+
+            @Override
+            public Void visitMarketOrderRejected() {
+                messageBuilder.setEvenType(EventType.MARKET_ORDER_REJECTED);
+                messageBuilder.setMarketOrderRejected((MarketOrderRejected) event.event);
                 return null;
             }
 
@@ -128,10 +163,17 @@ public class TcpEventHandler extends ChannelInboundHandlerAdapter implements Eve
             public Void visitUpdateQuantities() {
                 return null;
             }
-        });
 
-        if (ctx != null) {
-            ctx.writeAndFlush(messageBuilder.build());
+            @Override
+            public Void visitOrderBookCreated() {
+                return null;
+            }
+        });
+        pendingMessages.add(messageBuilder.build());
+
+        if (ctx != null && endOfBatch) {
+            pendingMessages.forEach(message -> ctx.writeAndFlush(message));
+            pendingMessages.clear();
         }
     }
 
@@ -141,7 +183,8 @@ public class TcpEventHandler extends ChannelInboundHandlerAdapter implements Eve
             channel.close().sync();
             connected.set(false);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("fail to close", e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -167,7 +210,8 @@ public class TcpEventHandler extends ChannelInboundHandlerAdapter implements Eve
                 }
 
             });
-        } catch (Exception ex) {
+        } catch (
+                Exception ex) {
             scheduleConnect(1000);
         }
     }
@@ -185,6 +229,12 @@ public class TcpEventHandler extends ChannelInboundHandlerAdapter implements Eve
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.ctx = ctx;
+        LOGGER.info("channelActive " + ctx);
+        List<MessageProvider.Message> messageList = supplier.get();
+        LOGGER.info("connection established then sending " + ctx);
+        messageList.forEach(ctx::writeAndFlush);
+        pendingMessages.forEach(ctx::writeAndFlush);
+        pendingMessages.clear();
     }
 
     private class HealthCheck extends com.codahale.metrics.health.HealthCheck {

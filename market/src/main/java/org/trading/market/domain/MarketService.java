@@ -2,9 +2,9 @@ package org.trading.market.domain;
 
 import com.github.javafaker.Faker;
 import org.slf4j.Logger;
-import org.trading.api.command.OrderType;
-import org.trading.api.command.Side;
-import org.trading.api.command.Side.SideVisitor;
+import org.trading.api.message.OrderType;
+import org.trading.api.message.Side;
+import org.trading.api.message.Side.SideVisitor;
 import org.trading.market.command.LastTradePrice;
 import org.trading.market.command.SubmitLimitOrder;
 import org.trading.market.command.UpdateCurrencies;

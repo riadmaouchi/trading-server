@@ -1,6 +1,6 @@
 package org.trading.api.service;
 
-import org.trading.api.command.SubmitOrder;
+import org.trading.api.message.SubmitOrder;
 
 public interface OrderListener {
 

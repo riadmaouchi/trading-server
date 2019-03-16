@@ -1,22 +1,24 @@
 package org.trading.trade.execution;
 
-import org.trading.configuration.Configuration;
-import org.trading.discovery.RemoteProviderFactory.RemoteProvider;
+import org.trading.discovery.RemoteProviderFactory;
 import org.trading.discovery.Service;
-import org.trading.discovery.ServiceConfiguration;
 import org.trading.health.HealthCheckServer;
+import org.trading.serviceregistry.ServiceRegistry;
 import org.trading.trade.execution.web.TradeExecutionServer;
 import org.trading.trade.execution.web.TradeExecutionServer.ServerConfiguration;
 
 import java.util.stream.Stream;
 
-import static java.lang.Boolean.parseBoolean;
-import static java.lang.System.getProperty;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.getenv;
 import static java.util.Optional.ofNullable;
-import static org.trading.configuration.Configuration.create;
 import static org.trading.discovery.RemoteProviderFactory.RemoteProvider.CONSUL;
 import static org.trading.discovery.RemoteProviderFactory.RemoteProvider.DEFAULT;
 import static org.trading.discovery.RemoteProviderFactory.getFactory;
+import static org.trading.trade.execution.ServiceName.BLOTTER;
+import static org.trading.trade.execution.ServiceName.EXECUTION;
+import static org.trading.trade.execution.ServiceName.ORDERBOOK;
+import static org.trading.trade.execution.ServiceName.TRADESERVER;
 import static org.trading.trade.execution.ServiceName.values;
 
 public final class TradeExecutionWebMain {
@@ -30,59 +32,65 @@ public final class TradeExecutionWebMain {
 
     private void start() throws Exception {
 
-        Configuration configuration = create();
-
-        String host = System.getProperty("docker.container.id", "localhost");
-        String consulEnabled = System.getProperty("consul.enabled", "false");
-        String serviceUrl = getProperty("service.url", "localhost");
+        String host = ofNullable(getenv("HOSTNAME")).orElse("localhost");
 
         String version = ofNullable(getClass().getPackage().getImplementationVersion())
                 .orElse("undefined");
         String name = ofNullable(getClass().getPackage().getImplementationTitle())
                 .orElse("undefined");
 
-        RemoteProvider provider = parseBoolean(consulEnabled) ? CONSUL : DEFAULT;
-        ServiceConfiguration serviceConfiguration = getFactory(provider).getServiceConfiguration();
+        int httpMonitoringPort = parseInt(ofNullable(getenv("HTTP.MONITORING.PORT")).orElse("9998"));
+        HealthCheckServer healthCheckServer = new HealthCheckServer(host, httpMonitoringPort, version, name);
+        healthCheckServer.start();
 
-        int httpMonitoringPort = configuration.getInt("monitoring.port");
+        RemoteProviderFactory.RemoteProvider provider = ofNullable(getenv("CONSUL.URL"))
+                .map(s -> CONSUL).orElse(DEFAULT);
+        ServiceRegistry serviceRegistry = getFactory(provider, healthCheckServer).getServiceConfiguration();
 
-        Stream.of(values()).map(serviceName -> new Service(
+
+
+        Stream.of(values()).map(service -> new Service(
                 "order",
-                configuration.getInt("service", serviceName.name + ".port"),
+                parseInt(ofNullable(getenv(service.name() + "." + service.protocol + ".PORT")).orElse(String.valueOf(service.defaultPort))),
+
                 3L,
-                serviceName.name,
+                service.name(),
                 httpMonitoringPort,
-                serviceName.protocol
-        )).forEach(service -> serviceConfiguration.register(service, host, serviceUrl));
+                service.protocol.toLowerCase()
+        )).forEach(service -> serviceRegistry.register(service, host, "localhost"));
 
-        new HealthCheckServer(host, httpMonitoringPort, version, name).start();
 
-        ServerConfiguration serverConfiguration = getServerConfiguration(configuration);
-        new TradeExecutionServer(serverConfiguration, serviceConfiguration, host).start();
+
+        ServerConfiguration serverConfiguration = getServerConfiguration();
+        new TradeExecutionServer(serverConfiguration, serviceRegistry, host, healthCheckServer).start();
 
     }
 
-    private ServerConfiguration getServerConfiguration(Configuration configuration) {
+    private ServerConfiguration getServerConfiguration() {
         return new ServerConfiguration() {
 
             @Override
             public int tradeServerPort() {
-                return configuration.getInt("service.tradeserver.port");
+                return parseInt(ofNullable(System.getenv(TRADESERVER.name() + "." + TRADESERVER.protocol + ".PORT"))
+                        .orElse(String.valueOf(TRADESERVER.defaultPort)));
             }
 
             @Override
             public int executionPort() {
-                return configuration.getInt("service.execution.port");
+                return parseInt(ofNullable(System.getenv(EXECUTION.name() + "." + EXECUTION.protocol + ".PORT"))
+                        .orElse(String.valueOf(EXECUTION.defaultPort)));
             }
 
             @Override
             public int orderBookPort() {
-                return configuration.getInt("service.orderbook.port");
+                return parseInt(ofNullable(System.getenv(ORDERBOOK.name() + "." + ORDERBOOK.protocol + ".PORT"))
+                        .orElse(String.valueOf(ORDERBOOK.defaultPort)));
             }
 
             @Override
             public int blotterPort() {
-                return configuration.getInt("service.blotter.port");
+                return parseInt(ofNullable(System.getenv(BLOTTER.name() + "." + BLOTTER.protocol + ".PORT"))
+                        .orElse(String.valueOf(BLOTTER.defaultPort)));
             }
         };
     }

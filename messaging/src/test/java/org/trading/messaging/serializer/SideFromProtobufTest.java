@@ -6,11 +6,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.trading.api.command.Side;
+import org.trading.MessageProvider;
+import org.trading.api.message.Side;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.trading.Side.UNKNOWN_SIDE;
-
+import static org.trading.MessageProvider.Side.UNKNOWN_SIDE;
 
 @ExtendWith(DataProviderExtension.class)
 class SideFromProtobufTest {
@@ -27,7 +27,7 @@ class SideFromProtobufTest {
             "SELL, SELL",
     })
     @TestTemplate
-    void should_convert_order_side(org.trading.Side inputSide, Side outputSide) {
+    void should_convert_order_side(MessageProvider.Side inputSide, Side outputSide) {
 
         // When
         Either<String, Side> sideEither = sideFromProtobuf.visit(inputSide, inputSide);

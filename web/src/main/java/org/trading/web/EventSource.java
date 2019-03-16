@@ -6,6 +6,7 @@ import net.minidev.json.parser.ParseException;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Response.Listener.Adapter;
+import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
@@ -16,9 +17,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static net.minidev.json.parser.JSONParser.MODE_RFC4627;
 import static org.eclipse.jetty.http.HttpMethod.GET;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class EventSource {
-
+    private static final Logger LOGGER = getLogger(EventSource.class);
     private final JSONParser parser = new JSONParser(MODE_RFC4627);
     private final String url;
     private final String path;
@@ -73,12 +75,12 @@ public class EventSource {
                                         .filter(eventHandler -> eventHandler.eventType.equals(event.event))
                                         .forEach(eventHandler -> eventHandler.consumer.accept(jsonObject));
                             } catch (ParseException e) {
-                                e.printStackTrace();
+                                LOGGER.error("cannot parse message", e);
                             }
                         }
                     }));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("cannot start client", e);
         }
 
     }

@@ -2,14 +2,14 @@ package org.trading.trade.execution.esp;
 
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.dsl.Disruptor;
-import org.trading.SubmitOrder;
+import org.trading.MessageProvider.SubmitOrder;
 import org.trading.messaging.Message;
 import org.trading.messaging.serializer.SubmitOrderToProtobuf;
 import org.trading.trade.execution.esp.TradeMessage.EventType.EventTypeVisitor;
 import org.trading.trade.execution.esp.domain.ExecutionAccepted;
 import org.trading.trade.execution.esp.translate.SubmitOrderTranslator;
 
-import static org.trading.api.command.SubmitOrder.aSubmitMarketOrder;
+import static org.trading.api.message.SubmitOrder.aSubmitMarketOrder;
 
 public class HedgingEventHandler implements EventHandler<TradeMessage> {
 
@@ -26,7 +26,7 @@ public class HedgingEventHandler implements EventHandler<TradeMessage> {
             @Override
             public Void visitExecutionAccepted() {
                 ExecutionAccepted executionAccepted = (ExecutionAccepted) tradeMessage.event;
-                org.trading.api.command.SubmitOrder order = aSubmitMarketOrder(
+                org.trading.api.message.SubmitOrder order = aSubmitMarketOrder(
                         executionAccepted.symbol,
                         "Hedging Service",
                         executionAccepted.quantity,

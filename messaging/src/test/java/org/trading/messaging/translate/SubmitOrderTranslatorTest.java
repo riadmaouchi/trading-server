@@ -1,7 +1,7 @@
 package org.trading.messaging.translate;
 
 import org.junit.jupiter.api.Test;
-import org.trading.api.command.SubmitOrder;
+import org.trading.api.message.SubmitOrder;
 import org.trading.messaging.Message;
 
 import static org.assertj.core.api.Assertions.assertThat;

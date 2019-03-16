@@ -1,6 +1,6 @@
 package org.trading.trade.execution.esp.domain;
 
-import org.trading.api.command.Side;
+import org.trading.api.message.Side;
 
 public class ExecutionRequest {
 

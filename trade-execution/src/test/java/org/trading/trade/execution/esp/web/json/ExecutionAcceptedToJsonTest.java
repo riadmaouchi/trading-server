@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 import static java.time.Month.JULY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.trading.api.command.Side.BUY;
+import static org.trading.api.message.Side.BUY;
 
 class ExecutionAcceptedToJsonTest {
     private ExecutionAcceptedToJson executionAcceptedToJson;

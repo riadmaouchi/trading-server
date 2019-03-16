@@ -54,7 +54,7 @@ public class SseEventDispatcher {
         try {
             asyncContext.getResponse().flushBuffer();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("cannot flush buffer", e);
         }
     }
 

@@ -1,11 +1,8 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-
-option java_multiple_files = true;
 option java_package = "org.trading";
-option optimize_for = SPEED;
-package org.trading;
+option java_outer_classname = "MessageProvider";
 
 enum OrderType {
     UNKNOWN_ORDER_TYPE = 0;
@@ -19,12 +16,20 @@ enum Side {
     SELL = 2;
 }
 
+enum FillStatus {
+    UNKNOWN_FILL_STATUS = 0;
+    FULLY_FILLED = 1;
+    PARTIALLY_FILLED = 2;
+}
+
+
 message Message {
     EventType evenType = 1;
     SubmitOrder submitOrder = 2;
-    LimitOrderPlaced limitOrderPlaced = 3;
-    MarketOrderPlaced marketOrderPlaced = 4;
+    LimitOrderAccepted limitOrderAccepted = 3;
+    MarketOrderAccepted marketOrderAccepted = 4;
     TradeExecuted tradeExecuted = 5;
+    MarketOrderRejected marketOrderRejected = 6;
 }
 
 message SubmitOrder {
@@ -36,7 +41,7 @@ message SubmitOrder {
     double price = 7;
 }
 
-message LimitOrderPlaced {
+message LimitOrderAccepted {
     string id = 1;
     string broker  = 2;
     int32 quantity = 3;
@@ -46,13 +51,19 @@ message LimitOrderPlaced {
     google.protobuf.Timestamp time = 7;
 }
 
-message MarketOrderPlaced {
+message MarketOrderAccepted {
     string id = 1;
     string broker  = 2;
     int32 quantity = 3;
     Side side = 4;
     string symbol = 5;
     google.protobuf.Timestamp time = 6;
+}
+
+message MarketOrderRejected {
+    string id = 1;
+    FillStatus fillStatus = 2;
+    google.protobuf.Timestamp time = 3;
 }
 
 message TradeExecuted {
@@ -66,14 +77,17 @@ message TradeExecuted {
     double sellingLimit = 8;
     google.protobuf.Timestamp time = 9;
     string symbol = 10;
+    OrderType buyingOrderType = 11;
+    OrderType sellingOrderType = 12;
 }
 
 enum EventType {
     UNKNOWN_MESSAGE = 0;
     SUBMIT_ORDER = 1;
-    LIMIT_ORDER_PLACED = 2;
-    MARKET_ORDER_PLACED = 3;
+    LIMIT_ORDER_ACCEPTED = 2;
+    MARKET_ORDER_ACCEPTED = 3;
     TRADE_EXECUTED = 4;
+    MARKET_ORDER_REJECTED = 5;
 }
 
 

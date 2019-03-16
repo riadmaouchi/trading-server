@@ -1,21 +1,26 @@
 package org.trading.discovery;
 
 import org.trading.discovery.consul.ConsulProviderFactory;
+import org.trading.serviceregistry.ServiceRegistry;
+import org.trading.health.HealthCheckServer;
+
+import static java.lang.System.getenv;
+import static java.util.Optional.ofNullable;
 
 public interface RemoteProviderFactory {
 
-    ServiceConfiguration getServiceConfiguration();
+    ServiceRegistry getServiceConfiguration();
 
-    static RemoteProviderFactory getFactory(RemoteProvider remoteProvider) {
+    static RemoteProviderFactory getFactory(RemoteProvider remoteProvider, HealthCheckServer healthCheckServer) {
         return remoteProvider.accept(new RemoteProviderVisitor<>() {
             @Override
             public RemoteProviderFactory visitConsul() {
-                return new ConsulProviderFactory();
+                return new ConsulProviderFactory(ofNullable(getenv("CONSUL.URL")).orElse("localhost"), healthCheckServer);
             }
 
             @Override
             public RemoteProviderFactory visitDefault() {
-                return new DefaultProviderFactory();
+                return new DefaultProviderFactory(healthCheckServer);
             }
         });
     }

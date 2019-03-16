@@ -1,16 +1,17 @@
 package org.trading.trade.execution.order.domain;
 
-import org.trading.api.command.Side;
-import org.trading.api.event.LimitOrderPlaced;
-import org.trading.api.event.MarketOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
+import org.trading.api.event.MarketOrderAccepted;
+import org.trading.api.event.MarketOrderRejected;
 import org.trading.api.event.TradeExecuted;
+import org.trading.api.message.OrderType.OrderTypeVisitor;
+import org.trading.api.message.Side;
 import org.trading.api.service.OrderEventListener;
 import org.trading.trade.execution.order.event.LastTradeExecuted;
 import org.trading.trade.execution.order.event.OrderLevelUpdated;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Predicate;
 
 public class OrderBook implements OrderEventListener {
     private final Map<String, CurrencyPair> availableCurrencyPairs = new HashMap<>();
@@ -33,17 +34,17 @@ public class OrderBook implements OrderEventListener {
     }
 
     @Override
-    public void onMarketOrderPlaced(MarketOrderPlaced marketOrderPlaced) {
+    public void onMarketOrderPlaced(MarketOrderAccepted marketOrderPlaced) {
         // nop
     }
 
     @Override
-    public void onLimitOrderPlaced(LimitOrderPlaced limitOrderPlaced) {
+    public void onLimitOrderPlaced(LimitOrderAccepted limitOrderAccepted) {
         OrderLevelUpdated order = new OrderLevelUpdated(
-                limitOrderPlaced.symbol,
-                limitOrderPlaced.side,
-                limitOrderPlaced.quantity,
-                limitOrderPlaced.price
+                limitOrderAccepted.symbol,
+                limitOrderAccepted.side,
+                limitOrderAccepted.quantity,
+                limitOrderAccepted.price
         );
 
         final CurrencyPair currencyPair = availableCurrencyPairs.computeIfAbsent(
@@ -55,26 +56,59 @@ public class OrderBook implements OrderEventListener {
 
     @Override
     public void onTradeExecuted(TradeExecuted tradeExecuted) {
-        OrderLevelUpdated buyOrder = new OrderLevelUpdated(
-                tradeExecuted.symbol,
-                Side.BUY,
-                tradeExecuted.quantity,
-                tradeExecuted.buyingLimit
-        );
 
-        OrderLevelUpdated sellOrder = new OrderLevelUpdated(
-                tradeExecuted.symbol,
-                Side.SELL,
-                tradeExecuted.quantity,
-                tradeExecuted.sellingLimit
-        );
+        tradeExecuted.buyingOrderType.accept(new OrderTypeVisitor<Void>() {
+            @Override
+            public Void visitMarket() {
+                // nop
+                return null;
+            }
 
-        availableCurrencyPairs.computeIfPresent(tradeExecuted.symbol, (symbol, currencyPair) -> {
-                    orderLevelListener.onOrderLevelUpdated(currencyPair.executeOrder(buyOrder));
-                    orderLevelListener.onOrderLevelUpdated(currencyPair.executeOrder(sellOrder));
-                    return currencyPair;
-                }
-        );
+            @Override
+            public Void visitLimit() {
+                OrderLevelUpdated buyOrder = new OrderLevelUpdated(
+                        tradeExecuted.symbol,
+                        Side.BUY,
+                        tradeExecuted.quantity,
+                        tradeExecuted.buyingLimit
+                );
+
+                availableCurrencyPairs.computeIfPresent(tradeExecuted.symbol, (symbol, currencyPair) -> {
+                            orderLevelListener.onOrderLevelUpdated(currencyPair.executeOrder(buyOrder));
+                            return currencyPair;
+                        }
+                );
+
+
+                return null;
+            }
+        });
+
+        tradeExecuted.sellingOrderType.accept(new OrderTypeVisitor<Void>() {
+            @Override
+            public Void visitMarket() {
+                // nop
+                return null;
+            }
+
+            @Override
+            public Void visitLimit() {
+                OrderLevelUpdated sellOrder = new OrderLevelUpdated(
+                        tradeExecuted.symbol,
+                        Side.SELL,
+                        tradeExecuted.quantity,
+                        tradeExecuted.sellingLimit
+                );
+                availableCurrencyPairs.computeIfPresent(tradeExecuted.symbol, (symbol, currencyPair) -> {
+                            orderLevelListener.onOrderLevelUpdated(currencyPair.executeOrder(sellOrder));
+                            return currencyPair;
+                        }
+                );
+
+                return null;
+            }
+        });
+
 
         LastTradeExecuted lastTradeExecuted = new LastTradeExecuted(
                 tradeExecuted.symbol,
@@ -88,5 +122,10 @@ public class OrderBook implements OrderEventListener {
         });
 
 
+    }
+
+    @Override
+    public void onMarketOrderRejected(MarketOrderRejected marketOrderRejected) {
+        // nop
     }
 }

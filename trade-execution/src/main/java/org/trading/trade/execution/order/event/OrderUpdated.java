@@ -1,6 +1,6 @@
 package org.trading.trade.execution.order.event;
 
-import org.trading.api.command.Side;
+import org.trading.api.message.Side;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -47,7 +47,7 @@ public class OrderUpdated {
 
 
     public enum Status {
-        SUBMITTING, WORKING, DONE
+        SUBMITTING, WORKING, DONE, CANCELLED
     }
 
 

@@ -5,10 +5,11 @@ import it.unimi.dsi.fastutil.doubles.Double2IntMap;
 import it.unimi.dsi.fastutil.doubles.Double2IntMap.Entry;
 import it.unimi.dsi.fastutil.ints.IntConsumer;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import org.trading.api.command.Side;
-import org.trading.api.command.Side.SideVisitor;
-import org.trading.api.event.LimitOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
 import org.trading.api.event.TradeExecuted;
+import org.trading.api.message.OrderType.OrderTypeVisitor;
+import org.trading.api.message.Side;
+import org.trading.api.message.Side.SideVisitor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,8 +21,8 @@ import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static org.trading.api.command.Side.BUY;
-import static org.trading.api.command.Side.SELL;
+import static org.trading.api.message.Side.BUY;
+import static org.trading.api.message.Side.SELL;
 
 public final class PricingService {
     private static final int DEFAULT_PRECISION = 5;
@@ -107,29 +108,57 @@ public final class PricingService {
         return Math.round(averagePrice * pow) / pow;
     }
 
-    public void onLimitOrderPlaced(LimitOrderPlaced limitOrderPlaced) {
-        midPrices.putIfAbsent(limitOrderPlaced.symbol, limitOrderPlaced.price);
+    public void onLimitOrderPlaced(LimitOrderAccepted limitOrderAccepted) {
+        midPrices.putIfAbsent(limitOrderAccepted.symbol, limitOrderAccepted.price);
 
-        depths.computeIfAbsent(limitOrderPlaced.symbol, symbol -> new MarketDepth())
-                .orders(limitOrderPlaced.side)
+        depths.computeIfAbsent(limitOrderAccepted.symbol, symbol -> new MarketDepth())
+                .orders(limitOrderAccepted.side)
                 .merge(
-                        limitOrderPlaced.price,
-                        limitOrderPlaced.quantity,
+                        limitOrderAccepted.price,
+                        limitOrderAccepted.quantity,
                         Integer::sum
                 );
-        computePrice(limitOrderPlaced.symbol, limitOrderPlaced.side);
+        computePrice(limitOrderAccepted.symbol, limitOrderAccepted.side);
     }
 
     public void onTradeExecuted(TradeExecuted tradeExecuted) {
-        depths.get(tradeExecuted.symbol).buyOrders.computeIfPresent(
-                tradeExecuted.buyingLimit,
-                (price, quantity) -> quantity - tradeExecuted.quantity
-        );
 
-        depths.get(tradeExecuted.symbol).sellOrders.computeIfPresent(
-                tradeExecuted.sellingLimit,
-                (price, quantity) -> quantity - tradeExecuted.quantity
-        );
+        tradeExecuted.buyingOrderType.accept(new OrderTypeVisitor<Void>() {
+            @Override
+            public Void visitMarket() {
+                // nop
+                return null;
+            }
+
+            @Override
+            public Void visitLimit() {
+                depths.get(tradeExecuted.symbol).buyOrders.computeIfPresent(
+                        tradeExecuted.buyingLimit,
+                        (price, quantity) -> quantity - tradeExecuted.quantity
+                );
+                return null;
+            }
+        });
+
+        tradeExecuted.sellingOrderType.accept(new OrderTypeVisitor<Void>() {
+            @Override
+            public Void visitMarket() {
+                // nop
+                return null;
+            }
+
+            @Override
+            public Void visitLimit() {
+                depths.get(tradeExecuted.symbol).sellOrders.computeIfPresent(
+                        tradeExecuted.sellingLimit,
+                        (price, quantity) -> quantity - tradeExecuted.quantity
+                );
+                return null;
+            }
+        });
+
+
+
         midPrices.put(tradeExecuted.symbol, tradeExecuted.price);
         computePrice(tradeExecuted.symbol);
     }
