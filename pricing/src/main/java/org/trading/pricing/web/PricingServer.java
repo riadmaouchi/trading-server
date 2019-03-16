@@ -7,8 +7,9 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
-import org.trading.discovery.ServiceConfiguration;
-import org.trading.health.HttpHealthCheck;
+import org.trading.serviceregistry.ServiceRegistry;
+import org.trading.health.HealthCheckClient;
+import org.trading.health.HealthCheckServer;
 
 import static org.eclipse.jetty.servlet.ServletContextHandler.NO_SESSIONS;
 import static org.eclipse.jetty.servlets.CrossOriginFilter.ACCESS_CONTROL_ALLOW_ORIGIN_HEADER;
@@ -16,21 +17,23 @@ import static org.eclipse.jetty.servlets.CrossOriginFilter.ALLOWED_HEADERS_PARAM
 import static org.eclipse.jetty.servlets.CrossOriginFilter.ALLOWED_METHODS_PARAM;
 import static org.eclipse.jetty.servlets.CrossOriginFilter.ALLOWED_ORIGINS_PARAM;
 import static org.eclipse.jetty.servlets.CrossOriginFilter.CHAIN_PREFLIGHT_PARAM;
-import static org.trading.health.HealthCheckServer.register;
 
 public class PricingServer {
-    private final ServiceConfiguration serviceConfiguration;
+    private final ServiceRegistry serviceRegistry;
     private final String host;
     private final PricingServerConfiguration pricingServerConfiguration;
+    private final HealthCheckServer healthCheckServer;
     private Server server;
 
-    public PricingServer(ServiceConfiguration serviceConfiguration,
+    public PricingServer(ServiceRegistry serviceRegistry,
                          String host,
-                         PricingServerConfiguration pricingServerConfiguration) {
-        this.serviceConfiguration = serviceConfiguration;
+                         PricingServerConfiguration pricingServerConfiguration,
+                         HealthCheckServer healthCheckServer) {
+        this.serviceRegistry = serviceRegistry;
         this.host = host;
         this.pricingServerConfiguration = pricingServerConfiguration;
-        register("Http Server", new HttpHealthCheck(host, pricingServerConfiguration.getHttpPort()));
+        this.healthCheckServer = healthCheckServer;
+        this.healthCheckServer.register("Http Server", new HealthCheckClient(host, pricingServerConfiguration.getHttpPort()));
     }
 
     public void start() throws Exception {
@@ -52,7 +55,8 @@ public class PricingServer {
 
         final PricingServlet pricingServlet = new PricingServlet(
                 new IntArrayList(new int[]{1_000_000, 5_000_000, 10_000_000, 25_000_000, 50_000_000}),
-                serviceConfiguration
+                serviceRegistry,
+                healthCheckServer
         );
 
         final ServletHolder pricingServletHolder = new ServletHolder(pricingServlet);

@@ -7,8 +7,9 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.slf4j.Logger;
-import org.trading.api.event.LimitOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
 import org.trading.api.event.TradeExecuted;
+import org.trading.health.HealthCheckServer;
 import org.trading.messaging.Message;
 import org.trading.messaging.netty.TcpDataSource;
 import org.trading.trade.execution.esp.HedgingEventHandler;
@@ -46,6 +47,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import static com.lmax.disruptor.dsl.ProducerType.SINGLE;
 import static com.lmax.disruptor.util.DaemonThreadFactory.INSTANCE;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static net.minidev.json.parser.JSONParser.MODE_RFC4627;
 import static org.eclipse.jetty.http.MimeTypes.Type.APPLICATION_JSON;
@@ -64,11 +66,13 @@ public class ExecutionServlet extends HttpServlet implements EventHandler<Messag
     private final Map<String, AsyncContext> contexts = new ConcurrentHashMap<>();
     private LastLook lastLook;
     private final Disruptor<Message> executionDisruptor;
+    private final HealthCheckServer healthCheckServer;
 
-    public ExecutionServlet(String host, int port, Disruptor<Message> disruptor) {
+    public ExecutionServlet(String host, int port, Disruptor<Message> disruptor, HealthCheckServer healthCheckServer) {
         this.host = host;
         this.port = port;
         this.executionDisruptor = disruptor;
+        this.healthCheckServer = healthCheckServer;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class ExecutionServlet extends HttpServlet implements EventHandler<Messag
         disruptor = new Disruptor<>(FACTORY, 1024, INSTANCE, SINGLE, new BlockingWaitStrategy());
         disruptor.handleEventsWith(this);
         disruptor.start();
-        TcpDataSource dataSource = new TcpDataSource(host, port, disruptor, "Execution");
+        TcpDataSource dataSource = new TcpDataSource(host, port, disruptor, "Execution", healthCheckServer);
         dataSource.connect();
 
         Disruptor<TradeMessage> outboundDisruptor = new Disruptor<>(
@@ -157,7 +161,7 @@ public class ExecutionServlet extends HttpServlet implements EventHandler<Messag
 
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
 
         try {
             String id = UUID.randomUUID().toString();
@@ -165,22 +169,22 @@ public class ExecutionServlet extends HttpServlet implements EventHandler<Messag
             asyncContext.setTimeout(2000);
             asyncContext.addListener(new AsyncListener() {
                 @Override
-                public void onComplete(AsyncEvent event) throws IOException {
+                public void onComplete(AsyncEvent event) {
                     contexts.remove(id);
                 }
 
                 @Override
-                public void onTimeout(AsyncEvent event) throws IOException {
+                public void onTimeout(AsyncEvent event) {
                     contexts.remove(id);
                 }
 
                 @Override
-                public void onError(AsyncEvent event) throws IOException {
+                public void onError(AsyncEvent event) {
                     contexts.remove(id);
                 }
 
                 @Override
-                public void onStartAsync(AsyncEvent event) throws IOException {
+                public void onStartAsync(AsyncEvent event) {
                 }
             });
             contexts.put(id, asyncContext);
@@ -199,23 +203,27 @@ public class ExecutionServlet extends HttpServlet implements EventHandler<Messag
             executorService.submit(() -> {
                 executorService.schedule(() -> disruptor.publishEvent(TradeTranslator::translateTo, trade), 300, MILLISECONDS);
             });
-        } catch (ParseException e) {
-            throw new ServletException("Invalid request", e);
+        } catch (ParseException | IOException e) {
+            LOGGER.warn("Invalid request", e);
+            try {
+                resp.sendError(SC_BAD_REQUEST, "Invalid request");
+            } catch (IOException ex) {
+                LOGGER.error("Invalid request", ex);
+            }
         }
     }
 
     @Override
     public void onEvent(org.trading.messaging.Message message, long sequence, boolean endOfBatch) {
-        LOGGER.info("Last look {}", message.toString());
 
         org.trading.messaging.Message.EventType eventType = message.type;
         switch (eventType) {
             case SUBSCRIBE:
                 lastLook.reportExecutions();
                 break;
-            case LIMIT_ORDER_PLACED:
-                LimitOrderPlaced limitOrderPlaced = ((LimitOrderPlaced) message.event);
-                lastLook.onLimitOrderPlaced(limitOrderPlaced);
+            case LIMIT_ORDER_ACCEPTED:
+                LimitOrderAccepted limitOrderAccepted = ((LimitOrderAccepted) message.event);
+                lastLook.onLimitOrderPlaced(limitOrderAccepted);
                 break;
             case TRADE_EXECUTED:
                 TradeExecuted tradeExecuted = ((TradeExecuted) message.event);

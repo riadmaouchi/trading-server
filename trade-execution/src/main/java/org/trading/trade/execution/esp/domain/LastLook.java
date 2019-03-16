@@ -3,9 +3,9 @@ package org.trading.trade.execution.esp.domain;
 import it.unimi.dsi.fastutil.doubles.Double2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.doubles.Double2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import org.trading.api.command.Side;
-import org.trading.api.event.LimitOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
 import org.trading.api.event.TradeExecuted;
+import org.trading.api.message.Side;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -108,13 +108,13 @@ public class LastLook {
         return Math.round(averagePrice * pow) / pow;
     }
 
-    public void onLimitOrderPlaced(LimitOrderPlaced limitOrderPlaced) {
+    public void onLimitOrderPlaced(LimitOrderAccepted limitOrderAccepted) {
 
-        depths.computeIfAbsent(limitOrderPlaced.symbol, symbol -> new MarketDepth())
-                .orders(limitOrderPlaced.side)
+        depths.computeIfAbsent(limitOrderAccepted.symbol, symbol -> new MarketDepth())
+                .orders(limitOrderAccepted.side)
                 .merge(
-                        limitOrderPlaced.price,
-                        limitOrderPlaced.quantity,
+                        limitOrderAccepted.price,
+                        limitOrderAccepted.quantity,
                         (initialQuantity, quantity) -> initialQuantity + quantity
                 );
     }

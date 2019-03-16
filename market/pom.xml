@@ -30,7 +30,7 @@
 
         <dependency>
             <groupId>org.trading</groupId>
-            <artifactId>configuration</artifactId>
+            <artifactId>health</artifactId>
         </dependency>
 
         <dependency>
@@ -93,19 +93,11 @@
             </plugin>
 
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/config</directory>
+            </resource>
+        </resources>
     </build>
-
-    <profiles>
-        <profile>
-            <id>local</id>
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/config</directory>
-                    </resource>
-                </resources>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

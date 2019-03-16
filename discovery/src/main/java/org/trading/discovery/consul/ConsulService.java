@@ -25,7 +25,6 @@ import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import static com.orbitz.consul.model.agent.Registration.RegCheck.ttl;
-import static java.lang.System.getProperty;
 import static java.util.stream.Collectors.toMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -33,18 +32,19 @@ public class ConsulService {
     private static final Logger LOGGER = getLogger(ConsulService.class);
     private final Timer timer = new Timer();
     private final Map<String, ServiceHealthCache> listeners = new HashMap<>();
-    private HealthClient healthClient;
-    private AgentClient agentClient;
+    private final HealthClient healthClient;
+    private final AgentClient agentClient;
     private final KVCache cache;
     private final KeyValueClient kvClient;
 
-    public ConsulService() {
-        Consul consul = connectConsul();
+    public ConsulService(String host) {
+        Consul consul = connectConsul(host);
         agentClient = consul.agentClient();
         healthClient = consul.healthClient();
         kvClient = consul.keyValueClient();
         cache = KVCache.newCache(kvClient, "/");
         cache.start();
+
     }
 
     public void register(Service service, String host, String serviceUrl) {
@@ -68,8 +68,8 @@ public class ConsulService {
                 .collect(toMap(Entry::getKey, value -> value.getValue().getValueAsString()))));
     }
 
-    private Consul connectConsul() {
-        HostAndPort consulAgent = HostAndPort.fromParts(getProperty("consul.url", "localhost"), 8500);
+    private Consul connectConsul(String host) {
+        HostAndPort consulAgent = HostAndPort.fromParts(host, 8500);
         LOGGER.info("Connecting to Consul Agent : {}", consulAgent);
 
         try {
@@ -82,9 +82,11 @@ public class ConsulService {
             LOGGER.error("Cannot ping discovery agent {}", e.getLocalizedMessage());
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException ex) {
+                LOGGER.error("Thread interrupted", ex);
+                Thread.currentThread().interrupt();
             }
-            return connectConsul();
+            return connectConsul(host);
         }
     }
 
@@ -99,7 +101,7 @@ public class ConsulService {
             try {
                 healthCache.start();
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("cannot start health cache", e);
             }
         }
     }
@@ -117,7 +119,7 @@ public class ConsulService {
             try {
                 agentClient.pass(service.id);
             } catch (NotRegisteredException e) {
-                e.printStackTrace();
+                LOGGER.error("cannot start consul agent", e);
             }
         }
     }

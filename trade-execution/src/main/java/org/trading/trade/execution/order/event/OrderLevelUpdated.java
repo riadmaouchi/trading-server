@@ -1,7 +1,7 @@
 package org.trading.trade.execution.order.event;
 
 import com.google.common.base.MoreObjects;
-import org.trading.api.command.Side;
+import org.trading.api.message.Side;
 
 public class OrderLevelUpdated {
     public final String symbol;

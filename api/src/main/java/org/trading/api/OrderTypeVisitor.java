@@ -1,6 +1,6 @@
 package org.trading.api;
 
-import org.trading.OrderType;
+import org.trading.MessageProvider.OrderType;
 
 public interface OrderTypeVisitor<T, R> {
 

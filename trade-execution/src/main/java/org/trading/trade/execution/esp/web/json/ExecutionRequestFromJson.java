@@ -1,7 +1,7 @@
 package org.trading.trade.execution.esp.web.json;
 
 import net.minidev.json.JSONObject;
-import org.trading.api.command.Side;
+import org.trading.api.message.Side;
 import org.trading.trade.execution.esp.domain.ExecutionRequest;
 
 public class ExecutionRequestFromJson {

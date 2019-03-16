@@ -15,28 +15,29 @@ services:
 
  matching-engine:
   build: matching-engine
-  depends_on:
+  external_links:
   - consul
+  environment:
+  - TCP_PORT
+  - HTTP_MONITORING_PORT
+  - DB_PATH
+  - CONSUL_URL
   ports:
-  - "8980"
-  - "8981"
-  - "8982"
-  - "8983"
-  - "8984"
+  - ${TCP_PORT}:8980
   - "8082:80"
   - "9997:9997"
+  volumes:
+  - /var/lib/ldb/data:/var/lib/ldb/data
   networks:
   - back
 
  trade-execution:
    build: trade-execution
-   depends_on:
+   external_links:
    - consul
+   env_file:
+   - trade-execution.env
    ports:
-   - "8980"
-   - "8982"
-   - "8983"
-   - "8984"
    - "8081:80"
    - "8080:8080"
    - "9998:9998"
@@ -45,8 +46,10 @@ services:
 
  pricing:
    build: pricing
-   depends_on:
+   external_links:
    - consul
+   env_file:
+   - pricing.env
    ports:
    - "8981"
    - "8084:80"
@@ -57,8 +60,10 @@ services:
 
  market:
    build: market
-   depends_on:
+   external_links:
     - consul
+   env_file:
+    - market.env
    ports:
    - "9996:9996"
    networks:
@@ -114,6 +119,7 @@ services:
 networks:
  back:
   driver: bridge
+  external: true
 
 
 

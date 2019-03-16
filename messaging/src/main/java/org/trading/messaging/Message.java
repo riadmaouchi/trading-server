@@ -23,34 +23,46 @@ public final class Message {
                 return visitor.visitSubscribe();
             }
         },
-        MARKET_ORDER_PLACED {
+        MARKET_ORDER_ACCEPTED {
             @Override
             public <R> R accept(EventTypeVisitor<R> visitor) {
-                return visitor.visitMarketOrderPlaced();
+                return visitor.visitMarketOrderAccepted();
             }
         },
-        LIMIT_ORDER_PLACED {
+        LIMIT_ORDER_ACCEPTED {
             @Override
             public <R> R accept(EventTypeVisitor<R> visitor) {
-                return visitor.visitLimitOrderPlaced();
+                return visitor.visitLimitOrderAccepted();
             }
         },
-        TRADE_EXECUTED{
+        MARKET_ORDER_REJECTED {
+            @Override
+            public <R> R accept(EventTypeVisitor<R> visitor) {
+                return visitor.visitMarketOrderRejected();
+            }
+        },
+        TRADE_EXECUTED {
             @Override
             public <R> R accept(EventTypeVisitor<R> visitor) {
                 return visitor.visitTradeExecuted();
             }
         },
-        REQUEST_EXECUTION{
+        REQUEST_EXECUTION {
             @Override
             public <R> R accept(EventTypeVisitor<R> visitor) {
                 return visitor.visitRequestExecution();
             }
         },
-        UPDATE_QUANTITIES{
+        UPDATE_QUANTITIES {
             @Override
             public <R> R accept(EventTypeVisitor<R> visitor) {
                 return visitor.visitUpdateQuantities();
+            }
+        },
+        ORDER_BOOK_CREATED {
+            @Override
+            public <R> R accept(EventTypeVisitor<R> visitor) {
+                return visitor.visitOrderBookCreated();
             }
         };
 
@@ -61,15 +73,19 @@ public final class Message {
 
             R visitSubscribe();
 
-            R visitMarketOrderPlaced();
+            R visitMarketOrderAccepted();
 
-            R visitLimitOrderPlaced();
+            R visitLimitOrderAccepted();
+
+            R visitMarketOrderRejected();
 
             R visitTradeExecuted();
 
             R visitRequestExecution();
 
             R visitUpdateQuantities();
+
+            R visitOrderBookCreated();
         }
     }
 

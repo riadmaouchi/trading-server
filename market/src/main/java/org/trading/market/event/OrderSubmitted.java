@@ -1,19 +1,19 @@
 package org.trading.market.event;
 
-import org.trading.api.command.OrderType;
-import org.trading.api.command.Side;
+import org.trading.api.message.OrderType;
+import org.trading.api.message.Side;
 
 public class OrderSubmitted {
     public final String symbol;
     public final String broker;
-    public final double amount;
+    public final long amount;
     public final Side side;
     public final OrderType type;
     public final double price;
 
     public OrderSubmitted(String symbol,
                           String broker,
-                          double amount,
+                          long amount,
                           Side side,
                           OrderType type,
                           double price) {

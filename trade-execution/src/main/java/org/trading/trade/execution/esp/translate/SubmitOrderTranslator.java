@@ -1,6 +1,6 @@
 package org.trading.trade.execution.esp.translate;
 
-import org.trading.SubmitOrder;
+import org.trading.MessageProvider.SubmitOrder;
 import org.trading.messaging.Message;
 
 import static org.trading.messaging.Message.EventType.SUBMIT_ORDER;

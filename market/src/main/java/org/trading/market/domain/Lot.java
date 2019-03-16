@@ -1,14 +1,14 @@
 package org.trading.market.domain;
 
 public enum Lot {
-    STANDARD(100_000),
-    MINI(10_000),
-    MICRO(1_000),
-    NANO(100);
+    STANDARD(100_000L),
+    MINI(10_000L),
+    MICRO(1_000L),
+    NANO(100L);
 
-    public final int numberOfUnits;
+    public final long numberOfUnits;
 
-    Lot(int numberOfUnits) {
+    Lot(long numberOfUnits) {
         this.numberOfUnits = numberOfUnits;
     }
 }

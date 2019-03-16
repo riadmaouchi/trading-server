@@ -2,7 +2,7 @@ FROM  openjdk:11-jdk-slim
 
 USER root
 
-EXPOSE 8980 8982 8983 8984 80 8080 9998
+EXPOSE 8982 8983 8984 80 8080 9998
 
 HEALTHCHECK CMD curl --fail http://localhost:9998 || exit 1
 

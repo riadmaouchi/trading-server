@@ -1,6 +1,6 @@
 package org.trading.messaging.translate;
 
-import org.trading.api.command.SubmitOrder;
+import org.trading.api.message.SubmitOrder;
 import org.trading.messaging.Message;
 
 public final class SubmitOrderTranslator {

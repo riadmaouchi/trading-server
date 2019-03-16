@@ -1,6 +1,7 @@
 package org.trading.api.event;
 
 import com.google.common.base.MoreObjects;
+import org.trading.api.message.OrderType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,6 +17,8 @@ public class TradeExecuted {
     public final double sellingLimit;
     public final LocalDateTime time;
     public final String symbol;
+    public final OrderType buyingOrderType;
+    public final OrderType sellingOrderType;
 
     public TradeExecuted(UUID buyingId,
                          String buyingBroker,
@@ -26,7 +29,9 @@ public class TradeExecuted {
                          double buyingLimit,
                          double sellingLimit,
                          LocalDateTime time,
-                         String symbol) {
+                         String symbol,
+                         OrderType buyingOrderType,
+                         OrderType sellingOrderType) {
         this.buyingId = buyingId;
         this.buyingBroker = buyingBroker;
         this.sellingId = sellingId;
@@ -37,6 +42,8 @@ public class TradeExecuted {
         this.sellingLimit = sellingLimit;
         this.time = time;
         this.symbol = symbol;
+        this.buyingOrderType = buyingOrderType;
+        this.sellingOrderType = sellingOrderType;
     }
 
     @Override
@@ -52,6 +59,8 @@ public class TradeExecuted {
                 .add("sellingLimit", sellingLimit)
                 .add("time", time)
                 .add("symbol", symbol)
+                .add("buyingOrderType", buyingOrderType)
+                .add("sellingOrderType", sellingOrderType)
                 .toString();
     }
 }

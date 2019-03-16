@@ -1,7 +1,7 @@
 package org.trading.api;
 
-import org.trading.api.command.Side;
-import org.trading.api.command.SubmitOrder;
+import org.trading.api.message.Side;
+import org.trading.api.message.SubmitOrder;
 
 public final class SubmitOrderBuilder {
     private String symbol = "EURUSD";

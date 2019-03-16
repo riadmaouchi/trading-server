@@ -11,10 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.trading.api.command.Side;
-import org.trading.api.event.LimitOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
+import org.trading.api.message.Side;
 import org.trading.trade.execution.bdd.model.Order;
-import org.trading.trade.execution.bdd.model.OrderBuilder;
 import org.trading.trade.execution.esp.domain.ExecutionAccepted;
 import org.trading.trade.execution.esp.domain.ExecutionRejected;
 import org.trading.trade.execution.esp.domain.LastLook;
@@ -161,7 +160,7 @@ class ExecutionTest extends SimpleScenarioTest<ExecutionTest.ExecutionTestSteps>
             IntStream.range(0, orders.length)
                     .mapToObj(id -> {
                         final Order order = orders[id];
-                        return new LimitOrderPlaced(
+                        return new LimitOrderAccepted(
                                 new UUID(0, id),
                                 LocalDateTime.now(),
                                 order.broker,

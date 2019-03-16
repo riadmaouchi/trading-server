@@ -1,0 +1,2497 @@
+{
+  "className": "org.trading.matching.engine.bdd.OrderBookTest",
+  "name": "Order Book",
+  "scenarios": [
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "submit_two_limit_orders_to_the_sell_order_book_with_the_same_price_limit",
+      "description": "submit two limit orders to the sell order book with the same price limit",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following sell orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following sell orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "10.4",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "10.4",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 10378222
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.4",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.4",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 36272185
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 47613031
+        }
+      ],
+      "durationInNanos": 47613031,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "decrease_top_outstanding_buy_order_partially_and_then_fill_it_completely",
+      "description": "decrease top outstanding buy order partially and then fill it completely",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following buy orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following buy orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1808164
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 8044777
+            },
+            {
+              "name": "the top order of the $ order book is filled by ",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the top order of the"
+                },
+                {
+                  "value": "BUY",
+                  "argumentInfo": {
+                    "argumentName": "side",
+                    "formattedValue": "\"BUY\""
+                  }
+                },
+                {
+                  "value": "order book is filled by "
+                },
+                {
+                  "value": "20",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"20\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 7262065
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d80, executedQuantity\u003d20, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "80",
+                          "20",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 10466401
+            },
+            {
+              "name": "the top order of the $ order book is filled by ",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the top order of the"
+                },
+                {
+                  "value": "BUY",
+                  "argumentInfo": {
+                    "argumentName": "side",
+                    "formattedValue": "\"BUY\""
+                  }
+                },
+                {
+                  "value": "order book is filled by "
+                },
+                {
+                  "value": "80",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"80\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1369448
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5523556
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 35910304
+        }
+      ],
+      "durationInNanos": 35910304,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "submit_two_limit_orders_to_the_buy_order_book_with_the_same_price_limit",
+      "description": "submit two limit orders to the buy order book with the same price limit",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following buy orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following buy orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.4",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "10.4",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2036423
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.4",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.4",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 11167306
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 14309380
+        }
+      ],
+      "durationInNanos": 14309380,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "submit_two_buy_limit_orders_with_less_aggressive_order_first",
+      "description": "submit two buy limit orders with less aggressive order first",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following buy orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following buy orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "10.4",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1689800
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.4",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 7797364
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 10466837
+        }
+      ],
+      "durationInNanos": 10466837,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "submit_a_buy_limit_order",
+      "description": "submit a buy limit order",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following buy orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following buy orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1612066
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5388243
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 7945282
+        }
+      ],
+      "durationInNanos": 7945282,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "submit_a_sell_limit_order",
+      "description": "submit a sell limit order",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following sell orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following sell orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1444181
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5388973
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 7825101
+        }
+      ],
+      "durationInNanos": 7825101,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "submit_market_buy_order_with_price_and_time_priority_over_limit_order",
+      "description": "submit market buy order with price and time priority over limit order",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order",
+        "org.trading.matching.engine.bdd.tag.MarketOrder-Market Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following buy orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following buy orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1704566
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5038490
+            },
+            {
+              "name": "the following buy orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following buy orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "MO",
+                          "MARKET"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2085988
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}, Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "MO",
+                          "MARKET"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 8000488
+            },
+            {
+              "name": "the following buy orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following buy orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dC, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "C",
+                          "BUY",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1268323
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}, Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "MO",
+                          "MARKET"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "C",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 9994960
+            },
+            {
+              "name": "the following buy orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following buy orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dD, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "D",
+                          "BUY",
+                          "100",
+                          "MO",
+                          "MARKET"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1299492
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}, Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "MO",
+                          "MARKET"
+                        ],
+                        [
+                          "EURUSD",
+                          "D",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "MO",
+                          "MARKET"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "C",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 12371673
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 43219510
+        }
+      ],
+      "durationInNanos": 43219510,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "submit_two_buy_limit_orders_with_the_more_aggressive_order_first",
+      "description": "submit two buy limit orders with the more aggressive order first",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following buy orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following buy orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "10.4",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1697744
+            },
+            {
+              "name": "the buy order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the buy order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dBUY, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "BUY",
+                          "100",
+                          "100",
+                          "0",
+                          "10.4",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 6813817
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 9566508
+        }
+      ],
+      "durationInNanos": 9566508,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "decrease_top_outstanding_sell_order_partially_and_then_fill_it_completely",
+      "description": "decrease top outstanding sell order partially and then fill it completely",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following sell orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following sell orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1653279
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 8569488
+            },
+            {
+              "name": "the top order of the $ order book is filled by ",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the top order of the"
+                },
+                {
+                  "value": "SELL",
+                  "argumentInfo": {
+                    "argumentName": "side",
+                    "formattedValue": "\"SELL\""
+                  }
+                },
+                {
+                  "value": "order book is filled by "
+                },
+                {
+                  "value": "20",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"20\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1519299
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d80, executedQuantity\u003d20, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "80",
+                          "20",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5697416
+            },
+            {
+              "name": "the top order of the $ order book is filled by ",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the top order of the"
+                },
+                {
+                  "value": "SELL",
+                  "argumentInfo": {
+                    "argumentName": "side",
+                    "formattedValue": "\"SELL\""
+                  }
+                },
+                {
+                  "value": "order book is filled by "
+                },
+                {
+                  "value": "80",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"80\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1943832
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3658823
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 24205218
+        }
+      ],
+      "durationInNanos": 24205218,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "submit_two_sell_limit_orders_with_less_aggressive_order_first",
+      "description": "submit two sell limit orders with less aggressive order first",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following sell orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following sell orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "10.4",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2244620
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.4",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 6189327
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 9390880
+        }
+      ],
+      "durationInNanos": 9390880,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "submit_two_sell_limit_orders_with_the_more_aggressive_order_first",
+      "description": "submit two sell limit orders with the more aggressive order first",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following sell orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following sell orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "10.4",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1333555
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.4, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.4",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 6599251
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 8998087
+        }
+      ],
+      "durationInNanos": 8998087,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.matching.engine.bdd.OrderBookTest",
+      "testMethodName": "submit_market_sell_order_with_price_and_time_priority_over_limit_order",
+      "description": "submit market sell order with price and time priority over limit order",
+      "tagIds": [
+        "org.trading.matching.engine.bdd.tag.OrderBook-Order Book",
+        "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order",
+        "org.trading.matching.engine.bdd.tag.MarketOrder-Market Order"
+      ],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the following sell orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following sell orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2122960
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 4624741
+            },
+            {
+              "name": "the following sell orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following sell orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "MO",
+                          "MARKET"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1333073
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}, Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "MO",
+                          "MARKET"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 8632931
+            },
+            {
+              "name": "the following sell orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following sell orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d10, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "C",
+                          "SELL",
+                          "100",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1918617
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}, Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "MO",
+                          "MARKET"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "C",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 10921965
+            },
+            {
+              "name": "the following sell orders are submitted in this order",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following sell orders are submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "D",
+                          "SELL",
+                          "100",
+                          "MO",
+                          "MARKET"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1703841
+            },
+            {
+              "name": "the sell order book looks like",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the sell order book looks like"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dB, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}, Order{symbol\u003dEURUSD, broker\u003dD, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003dMO, type\u003dMARKET}, Order{symbol\u003dEURUSD, broker\u003dA, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}, Order{symbol\u003dEURUSD, broker\u003dC, side\u003dSELL, amount\u003d100, openQuantity\u003d100, executedQuantity\u003d0, price\u003d10.5, type\u003dLIMIT}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Symbol",
+                          "Broker",
+                          "Side",
+                          "Qty",
+                          "OpenQty",
+                          "ExecQty",
+                          "Price",
+                          "Type"
+                        ],
+                        [
+                          "EURUSD",
+                          "B",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "MO",
+                          "MARKET"
+                        ],
+                        [
+                          "EURUSD",
+                          "D",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "MO",
+                          "MARKET"
+                        ],
+                        [
+                          "EURUSD",
+                          "A",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ],
+                        [
+                          "EURUSD",
+                          "C",
+                          "SELL",
+                          "100",
+                          "100",
+                          "0",
+                          "10.5",
+                          "LIMIT"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 11505420
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 44718412
+        }
+      ],
+      "durationInNanos": 44718412,
+      "executionStatus": "SUCCESS"
+    }
+  ],
+  "tagMap": {
+    "org.trading.matching.engine.bdd.tag.OrderBook-Order Book": {
+      "fullType": "org.trading.matching.engine.bdd.tag.OrderBook",
+      "type": "OrderBook",
+      "name": "Feature",
+      "value": "Order Book",
+      "description": "An order book is an electronic list of buy and sell orders for a specific security or financial instrument, organized by price level",
+      "color": "#9D99E5",
+      "href": ""
+    },
+    "org.trading.matching.engine.bdd.tag.Order-Order": {
+      "fullType": "org.trading.matching.engine.bdd.tag.Order",
+      "type": "Order",
+      "name": "Feature",
+      "value": "Order",
+      "description": "",
+      "color": "#D87296",
+      "href": ""
+    },
+    "org.trading.matching.engine.bdd.tag.LimitOrder-Limit Order": {
+      "fullType": "org.trading.matching.engine.bdd.tag.LimitOrder",
+      "type": "LimitOrder",
+      "value": "Limit Order",
+      "description": "Limit order is a take-profit order placed with a bank or brokerage to buy or sell a set amount of a financial instrument at a specified price or better",
+      "color": "#9BD55D",
+      "tags": [
+        "org.trading.matching.engine.bdd.tag.Order-Order"
+      ],
+      "href": ""
+    },
+    "org.trading.matching.engine.bdd.tag.MarketOrder-Market Order": {
+      "fullType": "org.trading.matching.engine.bdd.tag.MarketOrder",
+      "type": "MarketOrder",
+      "value": "Market Order",
+      "description": "An investor makes a market order through a broker or brokerage service to buy or sell an investment immediately at the best available current price",
+      "color": "#CE71D9",
+      "tags": [
+        "org.trading.matching.engine.bdd.tag.Order-Order"
+      ],
+      "href": ""
+    }
+  }
+}

@@ -1,0 +1,1519 @@
+{
+  "className": "org.trading.trade.execution.esp.bdd.ExecutionTest",
+  "name": "Execution",
+  "scenarios": [
+    {
+      "className": "org.trading.trade.execution.esp.bdd.ExecutionTest",
+      "testMethodName": "accept_sell_trade_request_when_the_refreshed_price_has_not_moved_in_either_direction_by_more_than_a_defined_price_tolerance",
+      "description": "accept sell trade request when the refreshed price has not moved in either direction by more than a defined price tolerance",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [
+        "price"
+      ],
+      "casesAsTable": true,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 14718491
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d500000, price\u003d1.20}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d200000, price\u003d1.21}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d200000, price\u003d1.19}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d300000, price\u003d1.22}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "BUY",
+                          "500000",
+                          "1.20"
+                        ],
+                        [
+                          "BUY",
+                          "200000",
+                          "1.21"
+                        ],
+                        [
+                          "BUY",
+                          "200000",
+                          "1.19"
+                        ],
+                        [
+                          "BUY",
+                          "300000",
+                          "1.22"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 39046241
+            },
+            {
+              "name": "a sell trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a sell trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.208",
+                  "argumentInfo": {
+                    "parameterName": "price",
+                    "argumentName": "price",
+                    "formattedValue": "\"1.208\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 10057023
+            },
+            {
+              "name": "the execution is accepted at",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is accepted at"
+                },
+                {
+                  "value": "1.208",
+                  "argumentInfo": {
+                    "argumentName": "price",
+                    "formattedValue": "\"1.208\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3507655
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [
+            "\"1.208\""
+          ],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 119990254
+        },
+        {
+          "caseNr": 2,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 118642
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d500000, price\u003d1.20}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d200000, price\u003d1.21}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d200000, price\u003d1.19}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d300000, price\u003d1.22}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "BUY",
+                          "500000",
+                          "1.20"
+                        ],
+                        [
+                          "BUY",
+                          "200000",
+                          "1.21"
+                        ],
+                        [
+                          "BUY",
+                          "200000",
+                          "1.19"
+                        ],
+                        [
+                          "BUY",
+                          "300000",
+                          "1.22"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3816064
+            },
+            {
+              "name": "a sell trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a sell trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.22008",
+                  "argumentInfo": {
+                    "parameterName": "price",
+                    "argumentName": "price",
+                    "formattedValue": "\"1.22008\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1751770
+            },
+            {
+              "name": "the execution is accepted at",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is accepted at"
+                },
+                {
+                  "value": "1.208",
+                  "argumentInfo": {
+                    "argumentName": "price",
+                    "formattedValue": "\"1.208\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2881024
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [
+            "\"1.22008\""
+          ],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 13095365
+        },
+        {
+          "caseNr": 3,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 302750
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d500000, price\u003d1.20}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d200000, price\u003d1.21}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d200000, price\u003d1.19}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d300000, price\u003d1.22}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "BUY",
+                          "500000",
+                          "1.20"
+                        ],
+                        [
+                          "BUY",
+                          "200000",
+                          "1.21"
+                        ],
+                        [
+                          "BUY",
+                          "200000",
+                          "1.19"
+                        ],
+                        [
+                          "BUY",
+                          "300000",
+                          "1.22"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2828160
+            },
+            {
+              "name": "a sell trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a sell trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.19592",
+                  "argumentInfo": {
+                    "parameterName": "price",
+                    "argumentName": "price",
+                    "formattedValue": "\"1.19592\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2688096
+            },
+            {
+              "name": "the execution is accepted at",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is accepted at"
+                },
+                {
+                  "value": "1.208",
+                  "argumentInfo": {
+                    "argumentName": "price",
+                    "formattedValue": "\"1.208\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3804046
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [
+            "\"1.19592\""
+          ],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 14153188
+        }
+      ],
+      "durationInNanos": 147238807
+    },
+    {
+      "className": "org.trading.trade.execution.esp.bdd.ExecutionTest",
+      "testMethodName": "reject_buy_trade_request_when_the_refreshed_price_has_moved_in_either_direction_by_more_than_a_defined_price_tolerance",
+      "description": "reject buy trade request when the refreshed price has moved in either direction by more than a defined price tolerance",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [
+        "price"
+      ],
+      "casesAsTable": true,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 82839
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.24}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d500000, price\u003d1.20}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d300000, price\u003d1.22}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.21}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.24"
+                        ],
+                        [
+                          "SELL",
+                          "500000",
+                          "1.20"
+                        ],
+                        [
+                          "SELL",
+                          "300000",
+                          "1.22"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.21"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2627576
+            },
+            {
+              "name": "a buy trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a buy trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.22009",
+                  "argumentInfo": {
+                    "parameterName": "price",
+                    "argumentName": "price",
+                    "formattedValue": "\"1.22009\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2915440
+            },
+            {
+              "name": "the execution is rejected",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is rejected"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2588955
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [
+            "\"1.22009\""
+          ],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 12207530
+        },
+        {
+          "caseNr": 2,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 57523
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.24}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d500000, price\u003d1.20}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d300000, price\u003d1.22}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.21}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.24"
+                        ],
+                        [
+                          "SELL",
+                          "500000",
+                          "1.20"
+                        ],
+                        [
+                          "SELL",
+                          "300000",
+                          "1.22"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.21"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2254881
+            },
+            {
+              "name": "a buy trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a buy trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.1959",
+                  "argumentInfo": {
+                    "parameterName": "price",
+                    "argumentName": "price",
+                    "formattedValue": "\"1.1959\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2890704
+            },
+            {
+              "name": "the execution is rejected",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is rejected"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2769551
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [
+            "\"1.1959\""
+          ],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 12010065
+        }
+      ],
+      "durationInNanos": 24217595
+    },
+    {
+      "className": "org.trading.trade.execution.esp.bdd.ExecutionTest",
+      "testMethodName": "accept_buy_trade_request_when_the_refreshed_price_has_not_moved_in_either_direction_by_more_than_a_defined_price_tolerance",
+      "description": "accept buy trade request when the refreshed price has not moved in either direction by more than a defined price tolerance",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [
+        "price"
+      ],
+      "casesAsTable": true,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 82631
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.24}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d500000, price\u003d1.20}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d300000, price\u003d1.22}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.21}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.24"
+                        ],
+                        [
+                          "SELL",
+                          "500000",
+                          "1.20"
+                        ],
+                        [
+                          "SELL",
+                          "300000",
+                          "1.22"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.21"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2111798
+            },
+            {
+              "name": "a buy trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a buy trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.208",
+                  "argumentInfo": {
+                    "parameterName": "price",
+                    "argumentName": "price",
+                    "formattedValue": "\"1.208\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2163607
+            },
+            {
+              "name": "the execution is accepted at",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is accepted at"
+                },
+                {
+                  "value": "1.208",
+                  "argumentInfo": {
+                    "argumentName": "price",
+                    "formattedValue": "\"1.208\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2755081
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [
+            "\"1.208\""
+          ],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 10323828
+        },
+        {
+          "caseNr": 2,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 60725
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.24}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d500000, price\u003d1.20}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d300000, price\u003d1.22}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.21}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.24"
+                        ],
+                        [
+                          "SELL",
+                          "500000",
+                          "1.20"
+                        ],
+                        [
+                          "SELL",
+                          "300000",
+                          "1.22"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.21"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2317766
+            },
+            {
+              "name": "a buy trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a buy trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.22008",
+                  "argumentInfo": {
+                    "parameterName": "price",
+                    "argumentName": "price",
+                    "formattedValue": "\"1.22008\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2504612
+            },
+            {
+              "name": "the execution is accepted at",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is accepted at"
+                },
+                {
+                  "value": "1.208",
+                  "argumentInfo": {
+                    "argumentName": "price",
+                    "formattedValue": "\"1.208\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5075883
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [
+            "\"1.22008\""
+          ],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 13888850
+        },
+        {
+          "caseNr": 3,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 86351
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.24}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d500000, price\u003d1.20}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d300000, price\u003d1.22}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.21}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.24"
+                        ],
+                        [
+                          "SELL",
+                          "500000",
+                          "1.20"
+                        ],
+                        [
+                          "SELL",
+                          "300000",
+                          "1.22"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.21"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3830030
+            },
+            {
+              "name": "a buy trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a buy trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.19592",
+                  "argumentInfo": {
+                    "parameterName": "price",
+                    "argumentName": "price",
+                    "formattedValue": "\"1.19592\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2875188
+            },
+            {
+              "name": "the execution is accepted at",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is accepted at"
+                },
+                {
+                  "value": "1.208",
+                  "argumentInfo": {
+                    "argumentName": "price",
+                    "formattedValue": "\"1.208\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3030397
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [
+            "\"1.19592\""
+          ],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 13398871
+        }
+      ],
+      "durationInNanos": 37611549
+    },
+    {
+      "className": "org.trading.trade.execution.esp.bdd.ExecutionTest",
+      "testMethodName": "reject_trade_request_when_liquidity_is_insufficient",
+      "description": "reject trade request when liquidity is insufficient",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "casesAsTable": false,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 92783
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dSELL, quantity\u003d200000, price\u003d1.24}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "SELL",
+                          "200000",
+                          "1.24"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2548468
+            },
+            {
+              "name": "a buy trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a buy trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.208",
+                  "argumentInfo": {
+                    "argumentName": "price",
+                    "formattedValue": "\"1.208\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2133721
+            },
+            {
+              "name": "the execution is rejected",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is rejected"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2949649
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 11308790
+        }
+      ],
+      "durationInNanos": 11308790,
+      "executionStatus": "SUCCESS"
+    },
+    {
+      "className": "org.trading.trade.execution.esp.bdd.ExecutionTest",
+      "testMethodName": "reject_sell_trade_request_when_the_refreshed_price_has_moved_in_either_direction_by_more_than_a_defined_price_tolerance",
+      "description": "reject sell trade request when the refreshed price has moved in either direction by more than a defined price tolerance",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [
+        "price"
+      ],
+      "casesAsTable": true,
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 88784
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d500000, price\u003d1.20}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d200000, price\u003d1.21}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d200000, price\u003d1.19}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d300000, price\u003d1.22}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "BUY",
+                          "500000",
+                          "1.20"
+                        ],
+                        [
+                          "BUY",
+                          "200000",
+                          "1.21"
+                        ],
+                        [
+                          "BUY",
+                          "200000",
+                          "1.19"
+                        ],
+                        [
+                          "BUY",
+                          "300000",
+                          "1.22"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2138773
+            },
+            {
+              "name": "a sell trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a sell trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.22009",
+                  "argumentInfo": {
+                    "parameterName": "price",
+                    "argumentName": "price",
+                    "formattedValue": "\"1.22009\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2563424
+            },
+            {
+              "name": "the execution is rejected",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is rejected"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2452774
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [
+            "\"1.22009\""
+          ],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 10616655
+        },
+        {
+          "caseNr": 2,
+          "steps": [
+            {
+              "name": "the price tolerance for execution is",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the price tolerance for execution is"
+                },
+                {
+                  "value": "0.01",
+                  "argumentInfo": {
+                    "argumentName": "tolerance",
+                    "formattedValue": "\"0.01\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 47797
+            },
+            {
+              "name": "the following orders have been submitted in this order",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the following orders have been submitted in this order"
+                },
+                {
+                  "value": "Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d500000, price\u003d1.20}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d200000, price\u003d1.21}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d200000, price\u003d1.19}, Order{symbol\u003dEURUSD, broker\u003dBroker, side\u003dBUY, quantity\u003d300000, price\u003d1.22}",
+                  "argumentInfo": {
+                    "argumentName": "orders",
+                    "dataTable": {
+                      "headerType": "HORIZONTAL",
+                      "data": [
+                        [
+                          "Side",
+                          "Qty",
+                          "Price"
+                        ],
+                        [
+                          "BUY",
+                          "500000",
+                          "1.20"
+                        ],
+                        [
+                          "BUY",
+                          "200000",
+                          "1.21"
+                        ],
+                        [
+                          "BUY",
+                          "200000",
+                          "1.19"
+                        ],
+                        [
+                          "BUY",
+                          "300000",
+                          "1.22"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2547819
+            },
+            {
+              "name": "a sell trade execution is submit for a quantity of $ at",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a sell trade execution is submit for a quantity of"
+                },
+                {
+                  "value": "1000000",
+                  "argumentInfo": {
+                    "argumentName": "quantity",
+                    "formattedValue": "\"1000000\""
+                  }
+                },
+                {
+                  "value": "at"
+                },
+                {
+                  "value": "1.1959",
+                  "argumentInfo": {
+                    "parameterName": "price",
+                    "argumentName": "price",
+                    "formattedValue": "\"1.1959\""
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3157525
+            },
+            {
+              "name": "the execution is rejected",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the execution is rejected"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 3875841
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [
+            "\"1.1959\""
+          ],
+          "status": "SUCCESS",
+          "success": true,
+          "durationInNanos": 13117582
+        }
+      ],
+      "durationInNanos": 23734237
+    }
+  ],
+  "tagMap": {}
+}

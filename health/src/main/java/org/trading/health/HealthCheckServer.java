@@ -2,98 +2,70 @@ package org.trading.health;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
-import com.codahale.metrics.health.jvm.ThreadDeadlockHealthCheck;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Resources;
-import com.sun.net.httpserver.HttpServer;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LoggingHandler;
+import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.SortedMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 
-import static java.net.HttpURLConnection.HTTP_OK;
-import static java.nio.file.FileSystems.newFileSystem;
-import static java.util.Collections.emptyMap;
+import static io.netty.channel.ChannelOption.SO_BACKLOG;
+import static io.netty.handler.logging.LogLevel.INFO;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public final class HealthCheckServer {
-    private static final HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
-    private final AtomicBoolean started = new AtomicBoolean(false);
-    private final HttpServer httpServer;
+    private final static Logger LOGGER = getLogger(HealthCheckServer.class);
+    private final HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
+    private Channel channel;
+    private final InetSocketAddress inetSocketAddress;
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
+    private final String version;
+    private final String name;
 
-    public HealthCheckServer(String host, int port, String appVersion, String appName) {
-        try {
-            HealthCheckReporter healthCheckReport = new HealthCheckReporter(appVersion, appName);
-            httpServer = HttpServer.create(new InetSocketAddress(host, port), 0);
-            httpServer.createContext("/", exchange -> {
-                SortedMap<String, HealthCheck.Result> checks = healthCheckRegistry.runHealthChecks();
-                boolean isHealthy = checks.values().stream().allMatch(HealthCheck.Result::isHealthy);
-                byte[] bytes = healthCheckReport.apply(checks).getBytes();
-                int statusCode = isHealthy ? HTTP_OK : HttpURLConnection.HTTP_INTERNAL_ERROR;
-                exchange.sendResponseHeaders(statusCode, bytes.length);
-                try (OutputStream os = exchange.getResponseBody()) {
-                    os.write(bytes);
-                }
-            });
-            BadgeReporter badgeReporter = new BadgeReporter(appVersion);
-            httpServer.createContext("/badge", exchange -> {
-                SortedMap<String, HealthCheck.Result> checks = healthCheckRegistry.runHealthChecks();
-                byte[] bytes = badgeReporter.apply(checks).getBytes();
-                exchange.getResponseHeaders().add("Content-Type", "image/svg+xml");
-                exchange.sendResponseHeaders(HTTP_OK, bytes.length);
-                try (OutputStream os = exchange.getResponseBody()) {
-                    os.write(bytes);
-                }
-            });
-            URI uri = Resources.getResource("static").toURI();
-            Path myPath;
-            if (uri.getScheme().equals("jar")) {
-                FileSystem fileSystem = newFileSystem(uri, emptyMap());
-                myPath = fileSystem.getPath("static");
-            } else {
-                myPath = Paths.get(uri);
-            }
-
-            try (Stream<Path> paths = Files.walk(myPath)) {
-                paths.filter(Files::isRegularFile)
-                        .forEach(path -> httpServer.createContext("/static/" + path.getFileName(), exchange -> {
-                            Path p = Paths.get(uri).relativize(path);
-                            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("static/" + p);
-                            byte[] bytes = ByteStreams.toByteArray(inputStream);
-                            try (OutputStream os = exchange.getResponseBody()) {
-                                exchange.sendResponseHeaders(HTTP_OK, bytes.length);
-                                os.write(bytes);
-                            }
-                        }));
-            }
-
-            healthCheckRegistry.register("Thread Deadlock", new ThreadDeadlockHealthCheck());
-        } catch (IOException | URISyntaxException e) {
-            throw new RuntimeException("Cannot bind HealthCheck server", e);
-        }
-    }
-
-    public static void register(String name, HealthCheck healthCheck) {
-        healthCheckRegistry.register(name, healthCheck);
+    public HealthCheckServer(String host, int port, String version, String name) {
+        this.version = version;
+        this.name = name;
+        inetSocketAddress = new InetSocketAddress(host, port);
     }
 
     public void start() {
-        started.set(true);
-        httpServer.setExecutor(null);
-        httpServer.start();
+        bossGroup = new NioEventLoopGroup(1);
+        workerGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap b = new ServerBootstrap();
+            b.option(SO_BACKLOG, 1024);
+            b.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(INFO))
+                    .childHandler(new HealthCheckInitializer(version, name, healthCheckRegistry));
+
+            channel = b.bind(inetSocketAddress).sync().channel();
+        } catch (InterruptedException e) {
+            LOGGER.warn("Interrupted!", e);
+            Thread.currentThread().interrupt();
+        }
     }
 
     public void stop() {
-        httpServer.stop(0);
+        if (channel == null) {
+            return;
+        }
+        try {
+            channel.close().sync();
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        } catch (InterruptedException e) {
+            LOGGER.warn("Interrupted!", e);
+            Thread.currentThread().interrupt();
+        }
+
+    }
+
+    public void register(String name, HealthCheck healthCheck) {
+        healthCheckRegistry.register(name, healthCheck);
     }
 }

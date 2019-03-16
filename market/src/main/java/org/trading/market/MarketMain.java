@@ -6,12 +6,11 @@ import net.minidev.json.JSONObject;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.slf4j.Logger;
-import org.trading.api.command.OrderType.OrderTypeVisitor;
-import org.trading.api.command.Side.SideVisitor;
-import org.trading.configuration.Configuration;
+import org.trading.api.message.OrderType.OrderTypeVisitor;
+import org.trading.api.message.Side.SideVisitor;
 import org.trading.discovery.RemoteProviderFactory;
 import org.trading.discovery.Service;
-import org.trading.discovery.ServiceConfiguration;
+import org.trading.serviceregistry.ServiceRegistry;
 import org.trading.health.HealthCheckServer;
 import org.trading.market.command.Command;
 import org.trading.market.command.Command.EventType.EventTypeVisitor;
@@ -34,14 +33,12 @@ import java.util.concurrent.TimeUnit;
 import static com.lmax.disruptor.dsl.ProducerType.MULTI;
 import static com.lmax.disruptor.dsl.ProducerType.SINGLE;
 import static com.lmax.disruptor.util.DaemonThreadFactory.INSTANCE;
-import static java.lang.Boolean.parseBoolean;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
-import static java.lang.System.getProperty;
+import static java.lang.System.getenv;
 import static java.util.Optional.ofNullable;
 import static org.eclipse.jetty.http.HttpMethod.POST;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.trading.configuration.Configuration.create;
 import static org.trading.discovery.RemoteProviderFactory.RemoteProvider.CONSUL;
 import static org.trading.discovery.RemoteProviderFactory.RemoteProvider.DEFAULT;
 import static org.trading.discovery.RemoteProviderFactory.getFactory;
@@ -62,26 +59,29 @@ public final class MarketMain {
 
     private void start() throws Exception {
 
-        String host = getProperty("docker.container.id", "localhost");
-        String consulEnabled = getProperty("consul.enabled", "false");
+        String host = ofNullable(getenv("HOSTNAME")).orElse("localhost");
 
         String version = ofNullable(getClass().getPackage().getImplementationVersion())
                 .orElse("undefined");
         String name = ofNullable(getClass().getPackage().getImplementationTitle())
                 .orElse("undefined");
 
-        RemoteProviderFactory.RemoteProvider provider = parseBoolean(consulEnabled) ? CONSUL : DEFAULT;
-        ServiceConfiguration serviceConfiguration = getFactory(provider).getServiceConfiguration();
+        String getenv = getenv("CONSUL.URL");
+
+        int httpMonitoringPort = parseInt(ofNullable(getenv("HTTP.MONITORING.PORT")).orElse("9996"));
+
+        HealthCheckServer healthCheckServer = new HealthCheckServer(host, httpMonitoringPort, version, name);
+        healthCheckServer.start();
+
+        RemoteProviderFactory.RemoteProvider provider = ofNullable(getenv)
+                .map(s -> CONSUL).orElse(DEFAULT);
+        ServiceRegistry serviceRegistry = getFactory(provider, healthCheckServer).getServiceConfiguration();
 
         HttpClient httpClient = new HttpClient();
         httpClient.start();
 
-        Configuration configuration = create();
 
-        int httpMonitoringPort = configuration.getInt("monitoring.port");
-        String serviceUrl = getProperty("service.url", "localhost");
 
-        new HealthCheckServer(host, httpMonitoringPort, version, name).start();
 
         Service service = new Service(
                 "market",
@@ -92,9 +92,9 @@ public final class MarketMain {
                 "http"
         );
 
-        serviceConfiguration.register(service, host, serviceUrl);
+        serviceRegistry.register(service, host, "localhost");
 
-        serviceConfiguration.discover("order");
+        serviceRegistry.discover("order");
 
         Disruptor<Event> outboundDisruptor = new Disruptor<>(
                 Event.FACTORY,
@@ -133,11 +133,11 @@ public final class MarketMain {
                 }
             }));
             submitOrder.put("price", orderSubmitted.price);
-            serviceConfiguration.get("order").ifPresent(url -> httpClient.newRequest(url)
+            serviceRegistry.get("order").ifPresent(url -> httpClient.newRequest(url)
                     .path("/v1/order/new")
                     .method(POST)
                     .content(new StringContentProvider(submitOrder.toJSONString()))
-                    .send(result -> LOGGER.info("Request complete {} ",result)));
+                    .send(result -> LOGGER.info("Request complete {} ", result)));
         });
         outboundDisruptor.start();
 
@@ -183,7 +183,7 @@ public final class MarketMain {
         }));
         inboundDisruptor.start();
 
-        serviceConfiguration.update(values -> values.entrySet().stream()
+        serviceRegistry.update(values -> values.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith("symbol"))
                 .forEach(value -> {
                     String[] strings = value.getKey().split("/");
@@ -203,7 +203,7 @@ public final class MarketMain {
                 })
         );
 
-        subscribe(serviceConfiguration, inboundDisruptor);
+        subscribe(serviceRegistry, inboundDisruptor);
 
 
         final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -211,11 +211,11 @@ public final class MarketMain {
         new RandomExecutor(scheduledExecutorService, () -> inboundDisruptor.publishEvent((event, sequence) -> {
             event.type = SUBMIT_LIMIT_ORDER;
             event.event = new SubmitLimitOrder();
-        }), 500);
+        }), 200L);
     }
 
-    private static void subscribe(ServiceConfiguration serviceConfiguration, Disruptor<Command> inboundDisruptor) {
-        serviceConfiguration.get("order").ifPresentOrElse(url -> new EventSource(url, "/v1/book/EURUSD")
+    private static void subscribe(ServiceRegistry serviceRegistry, Disruptor<Command> inboundDisruptor) {
+        serviceRegistry.get("order").ifPresentOrElse(url -> new EventSource(url, "/v1/book/EURUSD")
                         .addEventListener(new EventHandler("lastTradeUpdated", jsonObject -> {
                             inboundDisruptor.publishEvent((event, sequence) -> {
                                 event.type = LAST_TRADE_PRICE;
@@ -225,23 +225,17 @@ public final class MarketMain {
                                 );
                             });
                         })),
-                () -> {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    subscribe(serviceConfiguration, inboundDisruptor);
-                });
+                () -> subscribe(serviceRegistry, inboundDisruptor));
     }
 
     private static class RandomExecutor implements Runnable {
-        private static final Random rand = new Random();
+        private static final Random random = new Random();
         private ScheduledExecutorService ses;
         private Runnable runnable;
-        private int maxSleep;
+        private long maxSleep;
 
-        RandomExecutor(ScheduledExecutorService ses, Runnable runnable, int maxSleep) {
+
+        RandomExecutor(ScheduledExecutorService ses, Runnable runnable, long maxSleep) {
             this.ses = ses;
             this.runnable = runnable;
             this.maxSleep = maxSleep;
@@ -251,7 +245,7 @@ public final class MarketMain {
         @Override
         public void run() {
             runnable.run();
-            ses.schedule(this, rand.nextInt(maxSleep) + 1, TimeUnit.MILLISECONDS);
+            ses.schedule(this, 1 + (long) (Math.random() * (maxSleep - 1)), TimeUnit.MILLISECONDS);
         }
     }
 }

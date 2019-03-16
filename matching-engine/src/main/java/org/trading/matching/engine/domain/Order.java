@@ -1,16 +1,16 @@
 package org.trading.matching.engine.domain;
 
-import org.trading.api.command.Side;
+import org.trading.api.message.Side;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 public abstract class Order {
-    final UUID id;
+    public final UUID id;
     public final String broker;
     public final int quantity;
     private int openQuantity;
-    private int executedQuantity;
     public final Side side;
     public final String symbol;
     public final LocalDateTime time;
@@ -31,7 +31,6 @@ public abstract class Order {
 
     void decreasedBy(int quantity) {
         this.openQuantity -= quantity;
-        this.executedQuantity += quantity;
     }
 
     public abstract boolean crossesAt(double price);
@@ -49,8 +48,26 @@ public abstract class Order {
         return openQuantity;
     }
 
-    public int getExecutedQuantity() {
-        return executedQuantity;
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof Order)) {
+            return false;
+        }
+        Order that = (Order) other;
+        return quantity == that.quantity &&
+                openQuantity == that.openQuantity &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(broker, that.broker) &&
+                side == that.side &&
+                Objects.equals(symbol, that.symbol) &&
+                Objects.equals(time, that.time);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, broker, quantity, openQuantity, side, symbol, time);
+    }
 }

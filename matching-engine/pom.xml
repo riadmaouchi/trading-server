@@ -14,6 +14,11 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro-protobuf</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient</artifactId>
         </dependency>
@@ -34,12 +39,22 @@
 
         <dependency>
             <groupId>org.trading</groupId>
+            <artifactId>eventstore</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.trading</groupId>
             <artifactId>discovery</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.trading</groupId>
-            <artifactId>configuration</artifactId>
+            <artifactId>health</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil</artifactId>
         </dependency>
 
         <!-- LOGGING -->
@@ -64,6 +79,11 @@
         <dependency>
             <groupId>org.trading</groupId>
             <artifactId>api</artifactId>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.trading</groupId>
+            <artifactId>messaging</artifactId>
             <type>test-jar</type>
         </dependency>
 
@@ -126,19 +146,12 @@
             </plugin>
 
         </plugins>
-    </build>
 
-    <profiles>
-        <profile>
-            <id>local</id>
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/config</directory>
-                    </resource>
-                </resources>
-            </build>
-        </profile>
-    </profiles>
+        <resources>
+            <resource>
+                <directory>src/main/config</directory>
+            </resource>
+        </resources>
+    </build>
 
 </project>

@@ -1,11 +1,17 @@
 package org.trading.trade.execution.order.domain;
 
+import com.tngtech.junit.dataprovider.DataProvider;
+import com.tngtech.junit.dataprovider.DataProviderExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.trading.api.event.LimitOrderPlaced;
-import org.trading.api.event.MarketOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
+import org.trading.api.event.MarketOrderAccepted;
+import org.trading.api.event.MarketOrderRejected;
 import org.trading.api.event.TradeExecuted;
+import org.trading.api.message.FillStatus;
 import org.trading.trade.execution.order.event.OrderUpdated;
 
 import java.time.LocalDateTime;
@@ -15,16 +21,23 @@ import java.util.UUID;
 import static java.time.Month.JULY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.Mockito.*;
-import static org.trading.api.LimitOrderPlacedBuilder.aLimitOrderPlaced;
-import static org.trading.api.MarketOrderPlacedBuilder.aMarketOrderPlaced;
-import static org.trading.api.command.Side.BUY;
-import static org.trading.api.command.Side.SELL;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.trading.api.LimitOrderAcceptedBuilder.aLimitOrderAccepted;
+import static org.trading.api.MarketOrderAcceptedBuilder.aMarketOrderAccepted;
+import static org.trading.api.MarketOrderRejectedBuilder.aMarketOrderRejected;
+import static org.trading.api.message.Side.BUY;
+import static org.trading.api.message.Side.SELL;
 import static org.trading.trade.execution.TradeExecutedBuilder.aTradeExecuted;
-import static org.trading.trade.execution.order.event.OrderUpdated.Status.*;
+import static org.trading.trade.execution.order.event.OrderUpdated.Status.DONE;
+import static org.trading.trade.execution.order.event.OrderUpdated.Status.SUBMITTING;
+import static org.trading.trade.execution.order.event.OrderUpdated.Status.WORKING;
 import static org.trading.trade.execution.order.event.OrderUpdated.Type.LIMIT;
 import static org.trading.trade.execution.order.event.OrderUpdated.Type.MARKET;
 
+@ExtendWith(DataProviderExtension.class)
 class BlotterTest {
 
     private OrderListener orderListener;
@@ -42,7 +55,7 @@ class BlotterTest {
     void should_update_order_on_limit_order_placed() {
 
         // Given
-        LimitOrderPlaced limitOrderPlaced = aLimitOrderPlaced()
+        LimitOrderAccepted limitOrderAccepted = aLimitOrderAccepted()
                 .withId(new UUID(0, 1))
                 .withTime(LocalDateTime.of(2018, JULY, 1, 17, 1))
                 .withSymbol("EURUSD")
@@ -53,7 +66,7 @@ class BlotterTest {
                 .build();
 
         // When
-        blotter.onLimitOrderPlaced(limitOrderPlaced);
+        blotter.onLimitOrderPlaced(limitOrderAccepted);
 
         // Then
         verify(orderListener).onOrderUpdated(captor.capture());
@@ -76,7 +89,7 @@ class BlotterTest {
     void should_update_orders_on_execution() {
 
         // Given
-        MarketOrderPlaced marketOrderPlaced = aMarketOrderPlaced()
+        MarketOrderAccepted marketOrderPlaced = aMarketOrderAccepted()
                 .withId(new UUID(0, 1))
                 .withTime(LocalDateTime.of(2018, JULY, 1, 17, 1))
                 .withSymbol("EURUSD")
@@ -85,7 +98,7 @@ class BlotterTest {
                 .withQuantity(1_000)
                 .build();
 
-        LimitOrderPlaced limitOrderPlaced = aLimitOrderPlaced()
+        LimitOrderAccepted limitOrderAccepted = aLimitOrderAccepted()
                 .withId(new UUID(0, 2))
                 .withTime(LocalDateTime.of(2018, JULY, 1, 17, 2))
                 .withSymbol("EURUSD")
@@ -95,7 +108,7 @@ class BlotterTest {
                 .withQuantity(2_000)
                 .build();
         blotter.onMarketOrderPlaced(marketOrderPlaced);
-        blotter.onLimitOrderPlaced(limitOrderPlaced);
+        blotter.onLimitOrderPlaced(limitOrderAccepted);
         reset(orderListener);
 
         TradeExecuted tradeExecuted = aTradeExecuted()
@@ -142,10 +155,10 @@ class BlotterTest {
     }
 
     @Test
-    void should_update_order_on_market_order_placed() {
+    void should_update_order_on_market_order_accepted() {
 
         // Given
-        MarketOrderPlaced marketOrderPlaced = aMarketOrderPlaced()
+        MarketOrderAccepted marketOrderAccepted = aMarketOrderAccepted()
                 .withId(new UUID(0, 1))
                 .withSide(BUY)
                 .withQuantity(1_000)
@@ -155,7 +168,7 @@ class BlotterTest {
                 .build();
 
         // When
-        blotter.onMarketOrderPlaced(marketOrderPlaced);
+        blotter.onMarketOrderPlaced(marketOrderAccepted);
 
         // Then
         verify(orderListener).onOrderUpdated(captor.capture());
@@ -174,23 +187,52 @@ class BlotterTest {
         assertThat(orderUpdated.broker).isEqualTo("BROKER");
     }
 
+    @DataProvider({
+            "FULLY_FILLED, CANCELLED",
+            "PARTIALLY_FILLED, CANCELLED"
+    })
+    @TestTemplate
+    void should_close_order_on_market_order_rejected(FillStatus inputFillStatus, OrderUpdated.Status outputStatus) {
+
+        // Given
+        MarketOrderAccepted marketOrderAccepted = aMarketOrderAccepted()
+                .withId(new UUID(0, 1))
+                .build();
+        blotter.onMarketOrderPlaced(marketOrderAccepted);
+        reset(orderListener);
+
+        MarketOrderRejected marketOrderRejected = aMarketOrderRejected()
+                .withId(new UUID(0, 1))
+                .withFillStatus(inputFillStatus)
+                .build();
+
+        // When
+        blotter.onMarketOrderRejected(marketOrderRejected);
+
+        // Then
+        verify(orderListener).onOrderUpdated(captor.capture());
+        OrderUpdated orderUpdated = captor.getValue();
+        assertThat(orderUpdated.id).isEqualTo(new UUID(0, 1));
+        assertThat(orderUpdated.status).isEqualTo(outputStatus);
+    }
+
     @Test
     void should_compute_average_price() {
 
         // Given
-        LimitOrderPlaced limitOrderPlaced1 = aLimitOrderPlaced()
+        LimitOrderAccepted limitOrderAccepted1 = aLimitOrderAccepted()
                 .withId(new UUID(0, 2))
                 .withSide(BUY)
                 .withQuantity(2_000)
                 .build();
 
-        LimitOrderPlaced limitOrderPlaced2 = aLimitOrderPlaced()
+        LimitOrderAccepted limitOrderAccepted2 = aLimitOrderAccepted()
                 .withId(new UUID(0, 3))
                 .withSide(SELL)
                 .withQuantity(2_000)
                 .build();
-        blotter.onLimitOrderPlaced(limitOrderPlaced1);
-        blotter.onLimitOrderPlaced(limitOrderPlaced2);
+        blotter.onLimitOrderPlaced(limitOrderAccepted1);
+        blotter.onLimitOrderPlaced(limitOrderAccepted2);
         reset(orderListener);
 
         // When
@@ -235,19 +277,19 @@ class BlotterTest {
     void should_dispatch_order_updated() {
 
         // Given
-        LimitOrderPlaced limitOrderPlaced1 = aLimitOrderPlaced()
+        LimitOrderAccepted limitOrderAccepted1 = aLimitOrderAccepted()
                 .withId(new UUID(0, 2))
                 .withSide(BUY)
                 .withQuantity(2_000)
                 .build();
 
-        LimitOrderPlaced limitOrderPlaced2 = aLimitOrderPlaced()
+        LimitOrderAccepted limitOrderAccepted2 = aLimitOrderAccepted()
                 .withId(new UUID(0, 3))
                 .withSide(SELL)
                 .withQuantity(2_000)
                 .build();
-        blotter.onLimitOrderPlaced(limitOrderPlaced1);
-        blotter.onLimitOrderPlaced(limitOrderPlaced2);
+        blotter.onLimitOrderPlaced(limitOrderAccepted1);
+        blotter.onLimitOrderPlaced(limitOrderAccepted2);
         reset(orderListener);
 
         // When

@@ -3,13 +3,17 @@ package org.trading.messaging.serializer;
 import com.google.protobuf.Timestamp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.trading.MessageProvider;
 import org.trading.api.event.TradeExecuted;
+import org.trading.api.message.OrderType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static java.time.Month.JULY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.trading.MessageProvider.OrderType.LIMIT;
+import static org.trading.MessageProvider.OrderType.MARKET;
 import static org.trading.messaging.TradeExecutedBuilder.aTradeExecuted;
 
 class TradeExecutedFromProtobufTest {
@@ -25,7 +29,7 @@ class TradeExecutedFromProtobufTest {
     void should_convert_limit_order_placed() {
 
         // Given
-        org.trading.TradeExecuted tradeExecuted = aTradeExecuted()
+        MessageProvider.TradeExecuted tradeExecuted = aTradeExecuted()
                 .withBuyingId("00000000-0000-0000-0000-000000000001")
                 .withBuyingBroker("Buying Broker")
                 .withBuyingLimit(1.23489)
@@ -36,6 +40,8 @@ class TradeExecutedFromProtobufTest {
                 .withQuantity(1_000_000)
                 .withTime(Timestamp.newBuilder().setSeconds(1530464460L).build())
                 .withSymbol("EURUSD")
+                .withSellingOrderType(MARKET)
+                .withBuyingOrderType(LIMIT)
                 .build();
 
         // When
@@ -53,5 +59,7 @@ class TradeExecutedFromProtobufTest {
         assertThat(trade.quantity).isEqualTo(1_000_000);
         assertThat(trade.price).isEqualTo(1.23482);
         assertThat(trade.time).isEqualTo(LocalDateTime.of(2018, JULY, 1, 17, 1));
+        assertThat(trade.buyingOrderType).isEqualTo(OrderType.LIMIT);
+        assertThat(trade.sellingOrderType).isEqualTo(OrderType.MARKET);
     }
 }

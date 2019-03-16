@@ -1,7 +1,8 @@
 package org.trading.trade.execution.order.domain;
 
-import org.trading.api.event.LimitOrderPlaced;
-import org.trading.api.event.MarketOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
+import org.trading.api.event.MarketOrderAccepted;
+import org.trading.api.event.MarketOrderRejected;
 import org.trading.api.event.TradeExecuted;
 import org.trading.api.service.OrderEventListener;
 import org.trading.trade.execution.order.event.OrderUpdated;
@@ -10,9 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.trading.api.command.Side.BUY;
-import static org.trading.api.command.Side.SELL;
-import static org.trading.trade.execution.order.event.OrderUpdated.Status.*;
+import static org.trading.api.message.Side.BUY;
+import static org.trading.api.message.Side.SELL;
+import static org.trading.trade.execution.order.event.OrderUpdated.Status.CANCELLED;
+import static org.trading.trade.execution.order.event.OrderUpdated.Status.DONE;
+import static org.trading.trade.execution.order.event.OrderUpdated.Status.SUBMITTING;
+import static org.trading.trade.execution.order.event.OrderUpdated.Status.WORKING;
 import static org.trading.trade.execution.order.event.OrderUpdated.Type.LIMIT;
 import static org.trading.trade.execution.order.event.OrderUpdated.Type.MARKET;
 
@@ -25,7 +29,7 @@ public class Blotter implements OrderEventListener {
     }
 
     @Override
-    public void onMarketOrderPlaced(MarketOrderPlaced marketOrderPlaced) {
+    public void onMarketOrderPlaced(MarketOrderAccepted marketOrderPlaced) {
         OrderUpdated orderUpdated = new OrderUpdated(
                 marketOrderPlaced.id,
                 marketOrderPlaced.time,
@@ -45,18 +49,18 @@ public class Blotter implements OrderEventListener {
     }
 
     @Override
-    public void onLimitOrderPlaced(LimitOrderPlaced limitOrderPlaced) {
+    public void onLimitOrderPlaced(LimitOrderAccepted limitOrderAccepted) {
         OrderUpdated orderUpdated = new OrderUpdated(
-                limitOrderPlaced.id,
-                limitOrderPlaced.time,
-                limitOrderPlaced.broker,
-                limitOrderPlaced.quantity,
-                limitOrderPlaced.quantity,
+                limitOrderAccepted.id,
+                limitOrderAccepted.time,
+                limitOrderAccepted.broker,
+                limitOrderAccepted.quantity,
+                limitOrderAccepted.quantity,
                 0,
-                limitOrderPlaced.side,
-                limitOrderPlaced.price,
+                limitOrderAccepted.side,
+                limitOrderAccepted.price,
                 0,
-                limitOrderPlaced.symbol,
+                limitOrderAccepted.symbol,
                 SUBMITTING,
                 LIMIT
         );
@@ -98,6 +102,26 @@ public class Blotter implements OrderEventListener {
         ));
 
         orderListener.onOrderUpdated(sellOrderUpdated);
+    }
+
+    @Override
+    public void onMarketOrderRejected(MarketOrderRejected marketOrderRejected) {
+        OrderUpdated order = orders.computeIfPresent(marketOrderRejected.id, (id, orderUpdated) -> new OrderUpdated(
+                orderUpdated.id,
+                orderUpdated.time,
+                orderUpdated.broker,
+                orderUpdated.requestedAmount,
+                orderUpdated.leftAmount,
+                orderUpdated.amount,
+                orderUpdated.direction,
+                orderUpdated.limit,
+                orderUpdated.price,
+                orderUpdated.symbol,
+                CANCELLED,
+                orderUpdated.type
+        ));
+        orderListener.onOrderUpdated(order);
+
     }
 
     public void onSubscribe() {

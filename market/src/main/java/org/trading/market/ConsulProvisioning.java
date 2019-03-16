@@ -4,7 +4,9 @@ import com.google.common.net.HostAndPort;
 import com.orbitz.consul.Consul;
 import com.orbitz.consul.KeyValueClient;
 
-import static java.lang.System.getProperty;
+import java.util.Optional;
+
+import static java.lang.System.getenv;
 
 public class ConsulProvisioning {
 
@@ -12,7 +14,7 @@ public class ConsulProvisioning {
         KeyValueClient kvClient;
 
         Consul consul = Consul.builder()
-                .withHostAndPort(HostAndPort.fromParts(getProperty("consul.url", "localhost"), 8500))
+                .withHostAndPort(HostAndPort.fromParts(Optional.ofNullable(getenv("CONSUL.URL")).orElse("localhost"), 8500))
                 .build();
 
         kvClient = consul.keyValueClient();

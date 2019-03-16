@@ -4,9 +4,10 @@ import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.dsl.Disruptor;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import org.trading.api.event.LimitOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
 import org.trading.api.event.TradeExecuted;
-import org.trading.discovery.ServiceConfiguration;
+import org.trading.serviceregistry.ServiceRegistry;
+import org.trading.health.HealthCheckServer;
 import org.trading.messaging.Message;
 import org.trading.messaging.netty.TcpDataSource;
 import org.trading.pricing.domain.PricingService;
@@ -33,15 +34,19 @@ public class PricingServlet extends HttpServlet implements EventHandler<Message>
     private final SseEventDispatcher eventDispatcher = new SseEventDispatcher();
     private final PricesToJson pricesToJson = new PricesToJson();
     private final PricingService pricingService;
-    private final ServiceConfiguration serviceConfiguration;
+    private final ServiceRegistry serviceRegistry;
+    private final HealthCheckServer healthCheckServer;
     private Disruptor<Message> disruptor;
 
-    public PricingServlet(IntArrayList quantities, ServiceConfiguration serviceConfiguration) {
+    public PricingServlet(IntArrayList quantities,
+                          ServiceRegistry serviceRegistry,
+                          HealthCheckServer healthCheckServer) {
         pricingService = new PricingService(prices -> {
             String json = pricesToJson.toJson(prices).toJSONString();
             eventDispatcher.dispatchEvent("price", json);
         }, quantities);
-        this.serviceConfiguration = serviceConfiguration;
+        this.serviceRegistry = serviceRegistry;
+        this.healthCheckServer = healthCheckServer;
     }
 
     @Override
@@ -56,10 +61,11 @@ public class PricingServlet extends HttpServlet implements EventHandler<Message>
                 host,
                 port,
                 disruptor,
-                "Pricing"
+                "Pricing",
+                healthCheckServer
         );
         dataSource.connect();
-        serviceConfiguration.update(values -> values.entrySet().stream()
+        serviceRegistry.update(values -> values.entrySet().stream()
                 .filter(value -> value.getKey().equals("ladder/quantities"))
                 .findAny().ifPresent(value -> value.getValue().ifPresent(v -> {
                     var quantities = stream(v.split(","))
@@ -95,9 +101,9 @@ public class PricingServlet extends HttpServlet implements EventHandler<Message>
                         pricesToJson.toJson(price).toJSONString())
                 );
                 break;
-            case LIMIT_ORDER_PLACED:
-                LimitOrderPlaced limitOrderPlaced = (LimitOrderPlaced) message.event;
-                pricingService.onLimitOrderPlaced(limitOrderPlaced);
+            case LIMIT_ORDER_ACCEPTED:
+                LimitOrderAccepted limitOrderAccepted = (LimitOrderAccepted) message.event;
+                pricingService.onLimitOrderPlaced(limitOrderAccepted);
                 break;
             case TRADE_EXECUTED:
                 TradeExecuted tradeExecuted = (TradeExecuted) message.event;

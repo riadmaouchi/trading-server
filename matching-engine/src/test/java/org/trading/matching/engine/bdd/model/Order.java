@@ -1,15 +1,15 @@
 package org.trading.matching.engine.bdd.model;
 
 import com.google.common.base.MoreObjects;
-import org.trading.api.command.OrderType;
-import org.trading.api.command.Side;
+import org.trading.api.message.OrderType;
+import org.trading.api.message.Side;
 
 import java.util.Objects;
 
-import static org.trading.api.command.OrderType.LIMIT;
-import static org.trading.api.command.OrderType.MARKET;
-import static org.trading.api.command.Side.BUY;
-import static org.trading.api.command.Side.SELL;
+import static org.trading.api.message.OrderType.LIMIT;
+import static org.trading.api.message.OrderType.MARKET;
+import static org.trading.api.message.Side.BUY;
+import static org.trading.api.message.Side.SELL;
 
 public final class Order {
     public final String symbol;

@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import static java.time.Month.JUNE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.trading.api.command.Side.BUY;
+import static org.trading.api.message.Side.BUY;
 import static org.trading.trade.execution.order.event.OrderUpdated.Status.WORKING;
 import static org.trading.trade.execution.order.event.OrderUpdated.Type.LIMIT;
 

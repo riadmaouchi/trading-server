@@ -1,7 +1,7 @@
 package org.trading.trade.execution.bdd.model;
 
 import com.google.common.base.MoreObjects;
-import org.trading.api.command.Side;
+import org.trading.api.message.Side;
 
 import java.util.Objects;
 

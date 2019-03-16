@@ -1,6 +1,7 @@
 package org.trading.api;
 
-import org.trading.Side;
+
+import org.trading.MessageProvider;
 
 public interface SideVisitor<T, R> {
 
@@ -10,7 +11,7 @@ public interface SideVisitor<T, R> {
 
     R visitUnknownValue(T t);
 
-    default R visit(Side side, T t) {
+    default R visit(MessageProvider.Side side, T t) {
         R result;
 
         switch (side) {

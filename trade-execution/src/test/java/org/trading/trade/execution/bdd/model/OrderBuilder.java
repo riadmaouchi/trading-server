@@ -1,9 +1,9 @@
 package org.trading.trade.execution.bdd.model;
 
-import org.trading.api.command.Side;
+import org.trading.api.message.Side;
 
-import static org.trading.api.command.Side.BUY;
-import static org.trading.api.command.Side.SELL;
+import static org.trading.api.message.Side.BUY;
+import static org.trading.api.message.Side.SELL;
 
 public final class OrderBuilder {
     private String symbol = "EURUSD";

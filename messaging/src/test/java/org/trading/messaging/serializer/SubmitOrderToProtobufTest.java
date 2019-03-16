@@ -6,9 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.trading.OrderType;
-import org.trading.api.command.Side;
-import org.trading.api.command.SubmitOrder;
+import org.trading.MessageProvider;
+import org.trading.MessageProvider.OrderType;
+import org.trading.api.message.Side;
+import org.trading.api.message.SubmitOrder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.trading.api.SubmitOrderBuilder.aMarketOrder;
@@ -33,7 +34,7 @@ class SubmitOrderToProtobufTest {
                 .build();
 
         // When
-        org.trading.SubmitOrder submitOrder = submitOrderToProtobuf.toProtobuf(order);
+        MessageProvider.SubmitOrder submitOrder = submitOrderToProtobuf.toProtobuf(order);
 
         // Then
         assertThat(submitOrder.getAmount()).isEqualTo(100_000);
@@ -48,14 +49,14 @@ class SubmitOrderToProtobufTest {
             "SELL, SELL",
     })
     @TestTemplate
-    void should_convert_submit_market_order_side(Side inputSide, org.trading.Side outputSide) {
+    void should_convert_submit_market_order_side(Side inputSide, MessageProvider.Side outputSide) {
         // Given
         SubmitOrder order = aMarketOrder()
                 .withSide(inputSide)
                 .build();
 
         // When
-        org.trading.SubmitOrder submitOrder = submitOrderToProtobuf.toProtobuf(order);
+        MessageProvider.SubmitOrder submitOrder = submitOrderToProtobuf.toProtobuf(order);
 
         // Then
         assertThat(submitOrder.getSide()).isEqualTo(outputSide);

@@ -4,8 +4,9 @@ import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.dsl.Disruptor;
 import net.minidev.json.JSONObject;
-import org.trading.api.event.LimitOrderPlaced;
+import org.trading.api.event.LimitOrderAccepted;
 import org.trading.api.event.TradeExecuted;
+import org.trading.health.HealthCheckServer;
 import org.trading.messaging.Message;
 import org.trading.messaging.netty.TcpDataSource;
 import org.trading.trade.execution.order.domain.OrderBook;
@@ -39,6 +40,7 @@ public class OrderBookServlet extends HttpServlet implements EventHandler<Messag
     private final OrderLevelToJson orderLevelToJson = new OrderLevelToJson();
     private final LastTradeToJson lastTradeToJson = new LastTradeToJson();
     private final Map<String, JSONObject> lastTrades = new ConcurrentHashMap<>();
+    private final HealthCheckServer healthCheckServer;
 
     private final OrderBook orderBook = new OrderBook(new OrderLevelListener() {
         @Override
@@ -64,6 +66,10 @@ public class OrderBookServlet extends HttpServlet implements EventHandler<Messag
 
     private Disruptor<Message> disruptor;
 
+    public OrderBookServlet(HealthCheckServer healthCheckServer) {
+        this.healthCheckServer = healthCheckServer;
+    }
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -76,7 +82,8 @@ public class OrderBookServlet extends HttpServlet implements EventHandler<Messag
                 host,
                 port,
                 disruptor,
-                "Orderbook"
+                "Orderbook",
+                healthCheckServer
         );
         dataSource.connect();
         new Timer().schedule(new TimerTask() {
@@ -114,14 +121,19 @@ public class OrderBookServlet extends HttpServlet implements EventHandler<Messag
             }
 
             @Override
-            public Void visitMarketOrderPlaced() {
+            public Void visitMarketOrderAccepted() {
                 return null;
             }
 
             @Override
-            public Void visitLimitOrderPlaced() {
-                final LimitOrderPlaced limitOrderPlaced = (LimitOrderPlaced) message.event;
-                orderBook.onLimitOrderPlaced(limitOrderPlaced);
+            public Void visitLimitOrderAccepted() {
+                final LimitOrderAccepted limitOrderAccepted = (LimitOrderAccepted) message.event;
+                orderBook.onLimitOrderPlaced(limitOrderAccepted);
+                return null;
+            }
+
+            @Override
+            public Void visitMarketOrderRejected() {
                 return null;
             }
 
@@ -139,6 +151,11 @@ public class OrderBookServlet extends HttpServlet implements EventHandler<Messag
 
             @Override
             public Void visitUpdateQuantities() {
+                return null;
+            }
+
+            @Override
+            public Void visitOrderBookCreated() {
                 return null;
             }
         });

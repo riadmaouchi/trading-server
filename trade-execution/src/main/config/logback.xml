@@ -6,9 +6,9 @@
         </encoder>
     </appender>
 
-    <logger name="org.trading" level="ERROR"/>
+    <logger name="org.trading" level="INFO"/>
 
-    <root level="ERROR">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
