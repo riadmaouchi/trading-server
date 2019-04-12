@@ -76,12 +76,13 @@ public final class MatchingEngineMain {
 
         int httpMonitoringPort = parseInt(ofNullable(getenv("HTTP_MONITORING_PORT")).orElse("9997"));
 
-        RemoteProviderFactory.RemoteProvider provider = ofNullable(getenv("CONSUL_URL"))
+        String consulUrl = getenv("CONSUL_URL");
+        RemoteProviderFactory.RemoteProvider provider = ofNullable(consulUrl)
                 .map(s -> CONSUL).orElse(DEFAULT);
         HealthCheckServer healthCheckServer = new HealthCheckServer(host, httpMonitoringPort, version, name);
         healthCheckServer.start();
 
-        ServiceRegistry serviceRegistry = getFactory(provider, healthCheckServer).getServiceConfiguration();
+        ServiceRegistry serviceRegistry = getFactory(provider, healthCheckServer, consulUrl).getServiceConfiguration();
 
         Disruptor<Message> outboundDisruptor = new Disruptor<>(
                 Message.FACTORY,
