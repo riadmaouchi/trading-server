@@ -75,7 +75,7 @@ public final class MarketMain {
 
         RemoteProviderFactory.RemoteProvider provider = ofNullable(getenv)
                 .map(s -> CONSUL).orElse(DEFAULT);
-        ServiceRegistry serviceRegistry = getFactory(provider, healthCheckServer).getServiceConfiguration();
+        ServiceRegistry serviceRegistry = getFactory(provider, healthCheckServer, getenv).getServiceConfiguration();
 
         HttpClient httpClient = new HttpClient();
         httpClient.start();

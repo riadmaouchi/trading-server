@@ -33,14 +33,15 @@ public final class PricingWebMain {
         String name = ofNullable(getClass().getPackage().getImplementationTitle())
                 .orElse("undefined");
 
-        RemoteProviderFactory.RemoteProvider provider = ofNullable(getenv("CONSUL.URL"))
+        String consulUrl = getenv("CONSUL.URL");
+        RemoteProviderFactory.RemoteProvider provider = ofNullable(consulUrl)
                 .map(s -> CONSUL).orElse(DEFAULT);
 
         int httpMonitoringPort = parseInt(ofNullable(getenv("HTTP.MONITORING.PORT")).orElse("9999"));
 
         HealthCheckServer healthCheckServer = new HealthCheckServer(host, httpMonitoringPort, version, name);
         healthCheckServer.start();
-        ServiceRegistry serviceRegistry = getFactory(provider, healthCheckServer).getServiceConfiguration();
+        ServiceRegistry serviceRegistry = getFactory(provider, healthCheckServer, consulUrl).getServiceConfiguration();
 
         Stream.of(ServiceName.values()).map(service -> new Service(
                 "pricer",

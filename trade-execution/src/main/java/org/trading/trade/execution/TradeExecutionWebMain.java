@@ -43,9 +43,10 @@ public final class TradeExecutionWebMain {
         HealthCheckServer healthCheckServer = new HealthCheckServer(host, httpMonitoringPort, version, name);
         healthCheckServer.start();
 
-        RemoteProviderFactory.RemoteProvider provider = ofNullable(getenv("CONSUL.URL"))
+        String consulUrl = getenv("CONSUL.URL");
+        RemoteProviderFactory.RemoteProvider provider = ofNullable(consulUrl)
                 .map(s -> CONSUL).orElse(DEFAULT);
-        ServiceRegistry serviceRegistry = getFactory(provider, healthCheckServer).getServiceConfiguration();
+        ServiceRegistry serviceRegistry = getFactory(provider, healthCheckServer, consulUrl).getServiceConfiguration();
 
 
 
