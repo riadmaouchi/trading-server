@@ -27,7 +27,7 @@ services:
   - "8082:80"
   - "9997:9997"
   volumes:
-  - /var/lib/ldb/data:/var/lib/ldb/data
+  - ./target/var/lib/ldb/data:/var/lib/ldb/data
   networks:
   - back
 
