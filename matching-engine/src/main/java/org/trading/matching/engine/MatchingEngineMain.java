@@ -5,10 +5,11 @@ import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.Sequence;
 import com.lmax.disruptor.dsl.Disruptor;
+import io.prometheus.client.Counter;
+import io.prometheus.client.exporter.HTTPServer;
 import org.trading.api.message.SubmitOrder;
 import org.trading.discovery.RemoteProviderFactory;
 import org.trading.discovery.Service;
-import org.trading.serviceregistry.ServiceRegistry;
 import org.trading.eventstore.domain.DomainEvent;
 import org.trading.eventstore.store.EventDispatcher;
 import org.trading.eventstore.store.EventStoreCache;
@@ -36,7 +37,9 @@ import org.trading.matching.engine.view.ViewStore;
 import org.trading.messaging.Message;
 import org.trading.messaging.Message.EventType.EventTypeVisitor;
 import org.trading.messaging.netty.TcpDataSource;
+import org.trading.serviceregistry.ServiceRegistry;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -53,23 +56,23 @@ import static org.trading.discovery.RemoteProviderFactory.getFactory;
 
 public final class MatchingEngineMain {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new MatchingEngineMain().start();
     }
 
-    private void start() {
+    private void start() throws IOException {
 
         String version = ofNullable(getClass().getPackage().getImplementationVersion())
                 .orElse("undefined");
         String name = ofNullable(getClass().getPackage().getImplementationTitle())
                 .orElse("undefined");
 
-       /* new HTTPServer(1234);
+        new HTTPServer(1234);
 
         Counter requests = Counter.build()
-                .name("java_app_requests_total")
-                .help("Total requests.")
-                .register();*/
+                .name("matching_engine_requests_total")
+                .help("Matching Engine Total requests.")
+                .register();
 
         String host = ofNullable(getenv("HOSTNAME")).orElse("localhost");
         String dbPath = ofNullable(getenv("DB_PATH")).orElse("./target");
@@ -149,7 +152,7 @@ public final class MatchingEngineMain {
         );
 
         inboundDisruptor.handleEventsWith((event, sequence, endOfBatch) -> {
-            // requests.inc();
+            requests.inc();
             event.type.accept(new EventTypeVisitor<Void>() {
                 @Override
                 public Void visitSubmitOrder() {
@@ -214,7 +217,7 @@ public final class MatchingEngineMain {
         );
 
 
-        new TcpDataSource(host, 8980, inboundDisruptor, "matchingengine", healthCheckServer)
+        new TcpDataSource(host, servicePort, inboundDisruptor, "matchingengine", healthCheckServer)
                 .connect();
 
     }

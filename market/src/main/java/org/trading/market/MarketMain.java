@@ -66,7 +66,7 @@ public final class MarketMain {
         String name = ofNullable(getClass().getPackage().getImplementationTitle())
                 .orElse("undefined");
 
-        String getenv = getenv("CONSUL.URL");
+        String getenv = getenv("CONSUL_URL");
 
         int httpMonitoringPort = parseInt(ofNullable(getenv("HTTP.MONITORING.PORT")).orElse("9996"));
 

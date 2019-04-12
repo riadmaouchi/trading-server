@@ -2,7 +2,7 @@ FROM  openjdk:11-jdk-slim
 
 USER root
 
-EXPOSE 8980 8981 8982 8983 8984 80 9997
+EXPOSE 8981 8982 8983 8984 80 9997
 
 VOLUME /var/lib/ldb/data
 

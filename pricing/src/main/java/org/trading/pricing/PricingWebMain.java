@@ -33,7 +33,7 @@ public final class PricingWebMain {
         String name = ofNullable(getClass().getPackage().getImplementationTitle())
                 .orElse("undefined");
 
-        String consulUrl = getenv("CONSUL.URL");
+        String consulUrl = getenv("CONSUL_URL");
         RemoteProviderFactory.RemoteProvider provider = ofNullable(consulUrl)
                 .map(s -> CONSUL).orElse(DEFAULT);
 

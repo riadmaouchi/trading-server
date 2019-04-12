@@ -14,7 +14,7 @@ public class ConsulProvisioning {
         KeyValueClient kvClient;
 
         Consul consul = Consul.builder()
-                .withHostAndPort(HostAndPort.fromParts(Optional.ofNullable(getenv("CONSUL.URL")).orElse("localhost"), 8500))
+                .withHostAndPort(HostAndPort.fromParts(Optional.ofNullable(getenv("CONSUL_URL")).orElse("localhost"), 8500))
                 .build();
 
         kvClient = consul.keyValueClient();

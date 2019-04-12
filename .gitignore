@@ -2,3 +2,6 @@
 .idea
 jgiven-report
 target
+.classpath
+.project
+.settings
